@@ -1,5 +1,10 @@
 from scipy.constants import e, k, pi
 
+
+#Wow maintenat je peux modif ce fichier !!!!
+
+solene = None
+
 config_dict = {
 
         # Geometry
