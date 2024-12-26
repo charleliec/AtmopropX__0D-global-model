@@ -6,6 +6,8 @@ config_dict = {
         'R': 6e-2,
         'L': 10e-2,
         's': 1e-3,
+
+#bihbvhbjdvss
         
         # Neutral flow
         'm_i': 2.18e-25,
