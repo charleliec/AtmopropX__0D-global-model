@@ -2,7 +2,7 @@ from scipy.constants import e, k, pi
 
 
 #vhjvjvchjbkbjknjsqc
-toto = None #sure bout that ?
+toto = None #sure bout that ? # yeah pretty much
 
 config_dict = {
 
