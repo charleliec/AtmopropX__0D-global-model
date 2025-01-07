@@ -1,0 +1,33 @@
+import numpy as np 
+from scipy.constants import m_e, e, pi, k, epsilon_0 as eps_0, mu_0   # k is k_B -> Boltzmann constant
+from scipy.integrate import trapezoid, solve_ivp, odeint
+
+#Local modules
+from util import load_csv, load_cross_section
+from auxiliary_funcs import pressure, maxwellian_flux_speed, u_B, A_eff, A_eff_1, SIGMA_I, R_ind, h_L
+from specie import Specie, Species
+from reaction import Reaction
+
+def rate_constant(T_e, E, cs, m):
+        """Calculates a reaction rate constant """
+        T = T_e * k / e
+        v = np.sqrt(2 * E * e / m)  # electrons speed
+        a = (m / (2 * pi * e * T))**(3/2) * 4 * pi
+        f = cs * v**3 * np.exp(- m * v**2 / (2 * e * T[i])) 
+        k_rate = trapezoid(a*f, x=v)
+        return k_rate
+
+def get_K(state, fichier_csv):
+    """ Returns the constant rate corresponding to the state and fichier_csv"""
+        T_e = state[state.species.nb]
+        e_r,cs_r=load_cross_sections(fichier_csv)
+        k_rate=rate_constant(T_e,e_r,cs_r,m_e)
+        return(k_rate)
+
+def get_K_bis(state, specie: string, reaction: string):
+    """ specie: string, the specie involved (N, N2 or O2, O)
+    reaction: string, the type of reaction (ion_N,...)"""
+    T_e = state[state.species.nb]
+    e_r,cs_r=load_cross_sections('cross-sections/'specie+'/'+reaction+'.csv')
+    k_rate=rate_constant(T_e,e_r,cs_r,m_e) #si on considère que T_e en première approx
+    return(k_rate)
