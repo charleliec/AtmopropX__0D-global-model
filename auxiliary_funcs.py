@@ -86,36 +86,44 @@ def nu_i(n_g, liste_cross_section):
             if elem[0][i]<min:
                 min = elem[0][i]
     min = conversion(min)
-    max = conversion(min)
+    max = conversion(max)
     tab_v = np.linspace(min,max,100)
     delta = tab_v[1] - tab_v[0]
     int = 0
-    for i in range(100) :
+    for i in range(99) :
         sections = []
         for n in(range(len( liste_cross_section))) :
+            """on parcourre les réaction"""
             min = np.inf
+            indice_precedant =[0]*n
+            elem = liste_cross_sction(n)
             indice = 0
             for j in(range(len(elem[0]))):
-                if convertir(elem[0][0]) - tab_v[i] < min :
-                    min = convertir(elem[0][0]) - tab_v[i]
+                """on sélectionne le plus petit v_i de l'intervalle et sa cross section associée. S'il n'y en a pas dans le tableau, on prend le précédant"""
+                if convertir(elem[0][j]) < tab_v[i+1] and convertir(elem[0][j]) - tab_v[i] < min :
+                    min = convertir(elem[0][j]) - tab_v[i]
                     indice = j
-            section.append(elem[1][indice])
+                    indice_precedant[n] = j
+            if indice == 0:
+                indice = indice_precedant[n]
+            sections.append(elem[1][indice])
         sigma = 0
+        """on somme les sections efficaces pour calculer la fréquence de collision totale pour l'espèce considérée"""
         for s in sections :
-            if s > sigma :
-                sigma = s
+            sigma += s
         int += tab_v[i] * delta * f(tab_v[i]) * sigma
     return n_g * int
 
 def eps_i(omega, n_e, n_g, liste_cross_section):
-    """calcule le eps partiel du à une espèce"""
+    """calcule la permitivité diélectrique partielle due à une espèce i"""
     omega_pe_sq = (n_e * e**2) / (m_e * eps_0)
     return 1 - (omega_pe_sq / (omega * (omega -  1j*nu_i(n_g, liste_cross_section))))
+liste_eps = [eps_i(omega , n_e , n_g , liste_cross_section_O2) , eps_i(omega , n_e , n_g , liste_cross_section_N2) , eps_i(omega , n_e , n_g , liste_cross_section_N)]
 
 ###liste des c_i et des eps_i à définir, il faudrait des cross_section sur plus d'espèces
 
-def eps_p (liste_eps , liste_c) :
-    """il faut bien définir la liste des c à partir des densités. """
+def eps_p (liste_c) :
+    """il faut bien définir la liste des c à partir des densités. Les c_i sont normalisés pour que leur somme vaille 1"""
     def equation(x):
         sum = 0
         for i in(range(len(liste_eps))):
