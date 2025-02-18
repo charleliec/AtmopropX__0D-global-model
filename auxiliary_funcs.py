@@ -78,41 +78,16 @@ def conversion(E) :
 
 def nu_i(n_g, liste_cross_section):
     """renvoie pour chaque espèce son nu_m , fréquence de collision en général, calculé par une intégrale approximée"""
-    min, max = np.inf , 0
-    for elem in liste_cross_section :
-        for i in(range(len(elem[0]))):
-            if elem[0][i]>max :
-                max = elem[0][i]
-            if elem[0][i]<min:
-                min = elem[0][i]
-    min = conversion(min)
-    max = conversion(max)
-    tab_v = np.linspace(min,max,100)
-    delta = tab_v[1] - tab_v[0]
-    int = 0
-    for i in range(99) :
-        sections = []
-        for n in(range(len( liste_cross_section))) :
-            """on parcourre les réaction"""
-            min = np.inf
-            indice_precedant =[0]*n
-            elem = liste_cross_sction(n)
-            indice = 0
-            for j in(range(len(elem[0]))):
-                """on sélectionne le plus petit v_i de l'intervalle et sa cross section associée. S'il n'y en a pas dans le tableau, on prend le précédant"""
-                if convertir(elem[0][j]) < tab_v[i+1] and convertir(elem[0][j]) - tab_v[i] < min :
-                    min = convertir(elem[0][j]) - tab_v[i]
-                    indice = j
-                    indice_precedant[n] = j
-            if indice == 0:
-                indice = indice_precedant[n]
-            sections.append(elem[1][indice])
-        sigma = 0
-        """on somme les sections efficaces pour calculer la fréquence de collision totale pour l'espèce considérée"""
-        for s in sections :
-            sigma += s
-        int += tab_v[i] * delta * f(tab_v[i]) * sigma
-    return n_g * int
+    nu_m = 0
+    for liste_reaction in liste_cross_section:
+        tab_vitesses = []
+        for j in range(len(liste_reaction[0])):
+            tab_vitesses.append(conversion(liste_reaction[0][j]))
+        tab_y = []
+        for j in range(len(liste_reaction[1])):
+            tab_y.append(n_g * tab_vitesses[j] * f(tab_vitesses[j]) * liste_reaction[1][j])
+        nu_m += np.trapz(tab_y,tab_vitesses)
+    return nu_m
 
 def eps_i(omega, n_e, n_g, liste_cross_section):
     """calcule la permitivité diélectrique partielle due à une espèce i"""
