@@ -94,8 +94,26 @@ class GlobalModel:
     #     T_e, T_g, n_e, n_g = state
     #     R_ind_val = R_ind(self.R, self.L, self.N, self.omega, n_e, n_g, self.K_el(T_e))
     #     return (1/2) * (R_ind_val + self.R_coil) * self.I_coil**2
+    def normalised_concentrations(self , state , species) :
+        """Établissement d'une liste normalisée des concentrations des espèces (telle que leur somme vaut 1)"""
+        total_c , N = 0 , species.nb
+        normalised_c = []
+        for i in range(1 , N):
+            total_c += state[i]
+        for i in range(1 , N):
+            normalised_c.append(state[i]/total)
+        return normalised_c
+        
+    def eps_p (liste_eps , liste_c) :
+        """calcule la permittivité diélectrique relative due à toutes les réactions de collisions ellastiques elctron-neutre. Ces réactions sont considérées séparément par chacun des eps_i"""
+        def equation(x):
+            sum = 0
+            for i in(range(len(liste_eps))):
+                sum += liste_[i](liste_eps[i]-1)/(liste_eps[i] + 2*x)
+            return sum + (1-x)/(3*x)
+        return fsolve(equation , 1)
 
-
+    
     def f_dy(self, t, state):
         """Returns the derivative of the vector 'state' describing the state of plasma.
             'state' has format : [n_e, n_N2, ..., n_N+, T_e, T_monoato, ..., T_diato]"""
@@ -106,9 +124,16 @@ class GlobalModel:
         dy_densities = np.zeros(self.species.nb)
         dy_energies = np.zeros(3)
 
+        eps_i_list = []
+        normalised_c = normalised_concentrations(state)
+
         for reac in self.reaction_set:
             dy_densities += reac.density_change_rate(state)
             dy_energies += reac.energy_change_rate(state)
+            if reac.iselas :
+                eps_i_list.append(ElasticCollisionWithElectron.get_eps_i(state))
+        eps_p = eps_p(eps_i_list , normalised_c)
+
 
         # Energy given to the electrons via the coil
         dy_energies[0] += self.P_abs(state)
