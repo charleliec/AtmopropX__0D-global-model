@@ -46,3 +46,16 @@ class ElasticCollisionWithElectron(Reaction):
         rate[self.reactives[1].nb_atoms] = energy_change #mono / diatomic particles gain energy, electrons lose energy
 
         return rate
+
+    def get_eps_i(self, state) :
+        """ Renvoye la permittivité diélectrique relative due à une réaction de collision ellastique entre un électron et une espèce neutre"""
+        # Il faurda définir omega et les constantes physiques : m_e, eps_0, et e
+        omega_pe_sq = (n_e * e**2) / (m_e * eps_0)
+        # le carré de la pulsation plasma
+        for specie in self.reactives :
+            # On part du principe qu'il n'y a que deux réactifs : l'électron et l'espèce neutre
+            index_neutral = specie.index
+            if indice != 0 :
+                c_neutral = state[index_neutral]
+                nu_m_i = c_neutral * rate_constant
+        return 1 - (omega_pe_sq / (omega * (omega -  nu_m_i)))
