@@ -130,8 +130,8 @@ class GlobalModel:
         for reac in self.reaction_set:
             dy_densities += reac.density_change_rate(state)
             dy_energies += reac.energy_change_rate(state)
-            if reac.iselas :
-                eps_i_list.append(ElasticCollisionWithElectron.get_eps_i(state))
+            if reac.is_elastic_collision :
+                eps_i_list.append(reac.get_eps_i(state))
         eps_p = eps_p(eps_i_list , normalised_c)
 
         # calculation of R_ind with intermediary steps
