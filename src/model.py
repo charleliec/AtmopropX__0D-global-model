@@ -76,16 +76,16 @@ class GlobalModel:
             prop[i] = func(sol[i])
         return prop
     
-    def R_ind(R, L, N, omega, n_e, n_g, K_el):
-        ep = eps_p(omega, n_e, n_g, K_el)
-        k_p = (omega / c) * np.sqrt(ep)
-        a = 2 * pi * N**2 / (L * omega * eps_0)
-        b = 1j * k_p * R * jv(1, k_p * R) / (ep * jv(0, k_p * R))
-        return a * np.real(b)
-
-    def P_abs(self, state):
+    ##def R_ind(R, L, N, omega, n_e, n_g, K_el):
+    ##    ep = eps_p(omega, n_e, n_g, K_el)
+    ##    k_p = (omega / c) * np.sqrt(ep)
+    ##    a = 2 * pi * N**2 / (L * omega * eps_0)
+    ##    b = 1j * k_p * R * jv(1, k_p * R) / (ep * jv(0, k_p * R))
+    ##    return a * np.real(b)
+    
+    ##def P_abs(self, state):
         # ! n_g à changer
-        return R_ind(self.R, self.L, self.N, self.omega, n_e, n_g, self.K_el(T_e)) * self.I_coil**2 / 2 # the original code divided by V : density of power ?
+    ##    return R_ind(self.R, self.L, self.N, self.omega, n_e, n_g, self.K_el(T_e)) * self.I_coil**2 / 2 # the original code divided by V : density of power ?
     
 
     # def P_rf(self, state: NDArray[float]): # type: ignore
@@ -133,7 +133,11 @@ class GlobalModel:
             if reac.iselas :
                 eps_i_list.append(ElasticCollisionWithElectron.get_eps_i(state))
         eps_p = eps_p(eps_i_list , normalised_c)
-
+        k_p = (omega / c) * np.sqrt(eps_p)
+        a = 2 * pi * N**2 / (L * omega * eps_0)
+        b = 1j * k_p * R * jv(1, k_p * R) / (eps_p * jv(0, k_p * R))
+        R_ind = a * np.real(b)
+        P_abs = R_ind* self.I_coil**2 / 2
 
         # Energy given to the electrons via the coil
         dy_energies[0] += self.P_abs(state)
