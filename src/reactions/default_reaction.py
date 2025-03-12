@@ -79,9 +79,9 @@ class DefaultReaction(Reaction):
 
             elif reac_sp.nb_atoms == 2 :
                 mass_ratio = m_e / reac_sp.mass
-                delta_temp = state[self.species.nb] - state[self.species.nb + reac_sp.nb_atoms] # T_e - T_monoatomic
-                monoatomic_energy_change = 3 * mass_ratio * k_B * delta_temp * reac_speed 
-                rate[2] = monoatomic_energy_change
+                delta_temp = state[self.species.nb] - state[self.species.nb + reac_sp.nb_atoms] # T_e - T_diatomic
+                diatomic_energy_change = 3 * mass_ratio * k_B * delta_temp * reac_speed 
+                rate[2] = diatomic_energy_change
 
             else:
                 raise ValueError("Mass number {reac_sp.mass} is not currently handled.")
