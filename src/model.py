@@ -133,10 +133,14 @@ class GlobalModel:
             if reac.iselas :
                 eps_i_list.append(ElasticCollisionWithElectron.get_eps_i(state))
         eps_p = eps_p(eps_i_list , normalised_c)
+
+        # calculation of R_ind with intermediary steps
         k_p = (omega / c) * np.sqrt(eps_p)
         a = 2 * pi * N**2 / (L * omega * eps_0)
+        #jv are Besel functions
         b = 1j * k_p * R * jv(1, k_p * R) / (eps_p * jv(0, k_p * R))
         R_ind = a * np.real(b)
+        #deducing P_abs from R_ind
         P_abs = R_ind* self.I_coil**2 / 2
 
         # Energy given to the electrons via the coil
