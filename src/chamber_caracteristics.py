@@ -61,10 +61,10 @@ class Chamber(object):
         A_out : Effective area for which the gas can leave the chamber"""
         return (4 * k * T * Q) / (v * A_out)
 
-    def A_eff(self, n_g, R, L):
+    def A_eff(self, n_g, R, L): ### surface effective de perte des ions Xe+
         return (2 * self.h_R(n_g, R) * pi * R * L) + (2 * self.h_L(n_g, L) * pi * R**2)
 
-    def A_eff_1(self, n_g, R, L, beta_i):
+    def A_eff_1(self, n_g, R, L, beta_i): ###surface effective sur laquelle les ions Xe+ sont recyclés en atomes Xe
         return 2 * self.h_R(n_g, R) * pi * R * L + (2 - beta_i) * self.h_L(n_g, L) * pi * R**2
 
     def eps_p(self, omega, n_e, n_g, K_el):
