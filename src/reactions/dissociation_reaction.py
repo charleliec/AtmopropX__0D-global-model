@@ -54,7 +54,7 @@ class ElasticCollisionWithElectron(Reaction):
         mass_ratio = m_e / self.reactives[1].mass  # self.reactives[1].mass  is mass of colliding_specie
         delta_temp = state[self.species.nb] - state[self.species.nb + self.reactives[1].nb_atoms]  # Te - Tspecie
 
-        energy_change = 3 * mass_ratio * k_B * delta_temp * reac_speed 
+        energy_change = 3 * mass_ratio * e * delta_temp * reac_speed 
         
         rate[0] = -energy_change
         rate[self.reactives[1].nb_atoms] = energy_change #mono / diatomic particles gain energy, electrons lose energy
