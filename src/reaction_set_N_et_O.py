@@ -16,7 +16,7 @@ from src.constant_rate_calculation import get_K_func
 
 def get_species_and_reactions(chamber):
     
-    species_list = Species([Specie("e", m_e, -e, 0, 0), Specie("N_2", 4.65e-26, 0, 2, 5/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N_2+", 4.65e-26, e, 2, 5/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O_2+", 5.31e-26, e, 2, 5/2), Specie("O_2", 5.31e-26, 0, 2, 5/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
+    species_list = Species([Specie("e", m_e, -e, 0, 3/2), Specie("N_2", 4.65e-26, 0, 2, 5/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N_2+", 4.65e-26, e, 2, 5/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O_2+", 5.31e-26, e, 2, 5/2), Specie("O_2", 5.31e-26, 0, 2, 5/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
     
     exc1_N2 = Excitation(species_list, "N2", get_K_func(species_list, "N2", "exc1_N2"), 6.17, chamber)
     exc2_N2 = Excitation(species_list, "N2", get_K_func(species_list, "N2", "exc2_N2"), 7.35, chamber)
