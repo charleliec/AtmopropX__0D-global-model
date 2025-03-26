@@ -1,4 +1,9 @@
 from scipy.constants import pi, e, k, epsilon_0 as eps_0, c, m_e
+from src.reactions.excitation_reaction import Excitation
+from src.reactions.ionisation_reaction import Ionisation
+from src.reactions.elastic_collision_with_electrons_reaction import ElasticCollisionWithElectron
+from src.reactions.flux_to_walls_and_grids_reaction import FluxToWallsAndThroughGrids
+from src.reactions.gas_injection_reaction import GasInjection
                  
 species = Species([Specie("e", m_e, -e), Specie("Xe", 2.18e-25, 0), Specie("Xe+", 2.18e-25, e)])
 
