@@ -67,10 +67,15 @@ class FluxToWallsAndThroughGrids(Reaction):
         # * NOT neglected for now because missing energy of ion
 
         for sp in self.species.species[1:] :   # electron are skipped because handled before
-            if sp.charge != 0:
-                gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
-                rate[sp.nb_atoms] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
-            else:
-                rate[sp.nb_atoms] = - self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms] , sp.mass) * self.chamber.S_eff_neutrals / self.chamber.V_chamber
+            # if sp.charge != 0:
+            #     gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
+            #     rate[sp.nb_atoms] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
+            # else:
+            if sp.charge == 0:
+                E_neutral=sp.thermal_capacity * e * state[self.species.nb + sp.nb_atoms]
+                rate[sp.nb_atoms] = - E_neutral * self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms] , sp.mass) * self.chamber.S_eff_neutrals / self.chamber.V_chamber
         rate[0] = - E_kin * gamma_e * self.chamber.S_eff_total(n_g) / self.chamber.V_chamber
         return rate
+    
+    #problème avec les énergies : pour les ions, jsp mais pour les neutres: on prend l'agitation thermique
+    #il faut distinguer mono et diato pour les capacités thermiques
