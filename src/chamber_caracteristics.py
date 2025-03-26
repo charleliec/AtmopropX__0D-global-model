@@ -40,6 +40,8 @@ class Chamber(object):
         self.T_g_0  = config_dict["T_g_0"]
 
     
+    
+    
     def u_B(self,T_e, m_ion):
         """T_e in eV, m_ion is mass of single ion"""
         return np.sqrt(e*T_e/(m_ion))
@@ -54,6 +56,10 @@ class Chamber(object):
 
     def maxwellian_flux_speed(self, T, m):
         return np.sqrt((8 * e * T) / (pi * m))
+
+    def v_beam(self , m_ion , charge) :
+        '''beam speed on an ion going through the grids'''
+        return np.sqrt((2*charge*self.V_grid)/m_ion)
 
     def pressure(self, T, v, A_out):
         """Calculates pressure in steady state without any plasma.
@@ -80,8 +86,6 @@ class Chamber(object):
     def gamma_ion(self, n_ion, T_e , m_ion):
         return self.h_L(n_ion) * n_ion * self.u_B(T_e, m_ion)
 
-    def gamma_e(self, n_e, T_e):
-        return 0.25*n_e * self.maxwellian_flux_speed(T_e, m_e)  # TODO : elle sort d'où cette formule, elle est pas sur le latex...
 
     def gamma_neutral(self, n_neutral, T_neutral, m_neutral):
         return n_neutral*np.sqrt(8*e*T_neutral/(pi*N_A*m_neutral))/4

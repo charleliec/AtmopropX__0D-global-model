@@ -46,7 +46,7 @@ class GlobalModel:
         #fonction utilisée dans f_dy
         normalized_c = self.normalised_concentrations(state)
         omega_pe_sq = (state[0] * e**2) / (m_e * eps_0)
-        epsilons_i = 1 - omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  collision_frequencies))
+        epsilons_i = 1 - omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  1j*collision_frequencies))
 
         def equation(x):            
             return np.sum(normalized_c*(epsilons_i-1)/(epsilons_i + 2*x)) + (1-x)/(3*x)
@@ -69,7 +69,7 @@ class GlobalModel:
             dy_energies += reac.energy_change_rate(state)
             if isinstance(reac, GeneralElasticCollision) :
                 sp_idx, freq = reac.colliding_specie_and_collision_frequency(state)
-                collision_frequencies[sp_idx] = freq
+                collision_frequencies[sp_idx] += freq
         eps_p = self.eps_p(collision_frequencies, state)
 
         # calculation of P_abs : the power given by the antenna to the plasma
@@ -104,29 +104,38 @@ class GlobalModel:
     def P_abs(self , R_ind):
         return R_ind* self.chamber.I_coil**2 / 2
 
-    def thrust_i(self, T_e, n_e, n_ion , specie):
+    def thrust_i(self, T_e, n_e, n_ion , m_ion , charge):
         """Thrust produced by the ion beam of one specie"""
-        return self.chamber.gamma_ion(n_ion, T_e , specie) * specie.mass * self.chamber.v_beam(specie) * self.chamber.beta_i * pi * self.chamber.R ** 2
+        return self.chamber.gamma_ion(n_ion, T_e , m_ion) * specie.mass * self.chamber.v_beam(m_ion , charge) * self.chamber.beta_i * pi * self.chamber.R ** 2
 
-    def j_i(self, T_e, n_e, n_ion , specie):
+    def j_i(self, T_e, n_e, n_ion , m_ion , charge):
         """Ion current density of one ionic specie extracted by the grids"""
-        return self.chamber.gamma_ion(n_ion, T_e, specie) * e * specie.charge
+        return self.chamber.gamma_ion( n_ion, T_e, m_ion) * e * charge
+
         
     def total_ion_thrust(self , state ) :
         '''Calculates the total amount of thrust generated'''
         total_thrust = 0
         for i in(range(1,len(state)/2)):
-            if self.species[i].charge != 0 :
-                total_thrust += self.thrust_i( state[len(state)/2] , state[0] , state[i] , self.species.species[i])
-        return total_thrust
+            if self.species.species[i].charge != 0 :
+                total_thrust += self.thrust_i( state[len(state)/2] , state[0] , state[i] , slef.species.species[i].mass , self.species.species[i].charge)
+
 
     def total_ion_current(self , state ) :
         '''Calculates the total amount of ion current toxards the grids'''
         total_current = 0
         for i in(range(1,len(state)/2)):
             if self.species.species[i].charge != 0 :
-                total_current += self.j_i( state[len(state)/2] , state[0] , state[i] , self.species.species[i])
+                total_current += self.j_i( state[len(state)/2] , state[0] , state[i] , self.species.species[i].mass , self.species.species[i].charge)
         return total_current
+
+    def n_g (self, state) :
+        '''total density of neutral gases'''
+        total = 0
+        for i in(range(len(state)/2)) :
+            if self.specie.charge(self.species.species[i]) == 0 :
+                total += state[i]
+        return total
         
     def solve(self, t0, tf):
         y0 = np.array([self.chamber.T_e_0, self.chamber.T_g_0, self.chamber.n_e_0, self.chamber.n_g_0])

@@ -37,12 +37,18 @@ class FluxToWallsAndThroughGrids(Reaction):
     @override
     def density_change_rate(self, state):
         rate = np.zeros(self.species.nb)
-        rate[0] = - self.chamber.gamma_e(state[0], state[self.species.nb]) * self.chamber.S_eff / self.chamber.V_chamber
+        n_g = 0
+        gamma_e = 0
+        for i in(range(len(state)/2)) :
+            if self.specie.charge(self.species.species[i]) == 0:
+                n_g += state[i]
         for sp in self.species.species[1:] :   # electron are skipped because handled before
             if sp.charge != 0:
-                rate[sp.index] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb + sp.nb_atoms]) * A_eff / V_chamber
+                rate[sp.index] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
+                gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
             else:
-                rate[sp.index] = - self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms]) * A_g / V_chamber
+                rate[sp.index] = - self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms], sp.mass) * self.chamber.S_eff_neutrals / self.chamber.V_chamber
+        rate[0] = - gamma_e * self.chamber.S_eff_total(n_g) / self.chamber.V_chamber
         return rate
 
     
@@ -53,15 +59,18 @@ class FluxToWallsAndThroughGrids(Reaction):
 
         E_kin = 7*e*state[self.species.nb]
 
-        rate[0] = - E_kin * self.chamber.gamma_e(state[0], state[self.species.nb]) * S_eff / V_chamber
-
-
+        gamma_e = 0
+        n_g = 0
+        for i in(range(len(state)/2)) :
+            if self.specie.charge(self.species.species[i]) == 0:
+                n_g += state[i]
         # * NOT neglected for now because missing energy of ion
 
         for sp in self.species.species[1:] :   # electron are skipped because handled before
             if sp.charge != 0:
-                rate[sp.nb_atoms] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb + sp.nb_atoms]) * S_ion / V_chamber
+                gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
+                rate[sp.nb_atoms] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
             else:
-                rate[sp.nb_atoms] = - self.chamber.gamma_neutrals(state[sp.index], state[self.species.nb + sp.nb_atoms]) * S_neutrals / V_chamber
-
+                rate[sp.nb_atoms] = - self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms] , sp.mass) * self.chamber.S_eff_neutrals / self.chamber.V_chamber
+        rate[0] = - E_kin * gamma_e * self.chamber.S_eff_total(n_g) / self.chamber.V_chamber
         return rate
