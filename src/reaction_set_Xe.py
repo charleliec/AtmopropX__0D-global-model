@@ -39,4 +39,4 @@ def get_species_and_reactions(chamber):
   # Reaction list
   reaction_list = [ion_Xe, exc_Xe, src_Xe, rec_Xe, out_Xe, out_Xe_plus, ela_elec_Xe]
 
-  retuen species, reaction_list
+  return species, reaction_list
