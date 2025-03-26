@@ -9,7 +9,7 @@ from src.constant_rate_constant import get_K_func
 
 def get_species_and_reactions(chamber):
 
-  species = Species([Specie("e", m_e, -e), Specie("Xe", 2.18e-25, 0), Specie("Xe+", 2.18e-25, e)])
+  species = Species([Specie("e", m_e, -e , 0 , 3/2), Specie("Xe", 2.18e-25, 0 , 1 , 3/2), Specie("Xe+", 2.18e-25, e , 1 , 3/2)])
   
   ### Ionisation
   ion_Xe = Ionisation(species, "Xe", "Xe+", get_K_func(species, "Xe", "ion_Xe"), 12.127, chamber) 
