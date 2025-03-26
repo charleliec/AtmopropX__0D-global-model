@@ -11,10 +11,8 @@ from src.reactions.ionisation_reaction import Ionisation
 from src.reactions.elastic_collision_with_electrons_reaction import ElasticCollisionWithElectron
 from src.reactions.flux_to_walls_and_grids_reaction import FluxToWallsAndThroughGrids
 from src.reactions.gas_injection_reaction import GasInjection
-from src.specie import Species, Specie
-from src.constant_rate_calculation import get_K_func
 
-species_list = Species([Specie("e", m_e, -e), Specie("N_2", 4.65e-26, 0), Specie("N", 2.33e-26, 0), Specie("N_2+", 4.65e-26, e), Specie("N+", 2.33e-26, e), Specie("O_2+", 5.31e-26, e), Specie("O_2", 5.31e-26, 0), Specie("O", 2.67e-26, 0), Specie("O+", 2.67e-26, e)])
+species_list = Species([Specie("e", m_e, -e, 0, 0), Specie("N_2", 4.65e-26, 0, 2, 7/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N_2+", 4.65e-26, e, 2, 7/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O_2+", 5.31e-26, e, 2, 7/2), Specie("O_2", 5.31e-26, 0, 2, 7/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e1, 3/2)])
 
 exc1_N2 = Excitation(species_list, "N2", get_K_func(species_list, "N2", "exc1_N2"), 6.17, [1., 1.])
 exc2_N2 = Excitation(species_list, "N2", get_K_func(species_list, "N2", "exc2_N2"), 7.35, [1., 1.])
