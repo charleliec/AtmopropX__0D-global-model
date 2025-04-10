@@ -50,10 +50,11 @@ class FluxToWallsAndThroughGrids(Reaction):
         for sp in self.species.species[1:] :   # electron are skipped because handled before
             if sp.charge != 0:
                 gamma_ion = self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
-                rate[sp.index] -= gamma_ion * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
+                rate[sp.index] -=  gamma_ion * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
                 neutralized_sp = self.species.get_specie_by_name(sp.name[:-1]) # remove last caracter from string, i.e. "Xe+" becomes "Xe"
-                rate[neutralized_sp.index] += gamma_ion * self.chamber.S_eff_total_ion_neutrelisation(self.n_g_tot(state)) / self.chamber.V_chamber
+                rate[neutralized_sp.index] +=  gamma_ion * self.chamber.S_eff_total_ion_neutrelisation(self.n_g_tot(state)) / self.chamber.V_chamber
                 gamma_e += gamma_ion
+                #(1-self.chamber.h_L(self.n_g_tot(state))) *
             else:
                 rate[sp.index] -= self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms], sp.mass) * self.chamber.S_eff_neutrals() / self.chamber.V_chamber
                 self.var_tracker.add_value_to_variable("xenon_leaving", self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms], sp.mass) * self.chamber.S_eff_neutrals() / self.chamber.V_chamber)
@@ -76,7 +77,7 @@ class FluxToWallsAndThroughGrids(Reaction):
         for sp in self.species.species[1:] :   # electron are skipped because handled before
             if sp.charge != 0:
                 gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
-            #     rate[sp.nb_atoms] = - self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
+                #rate[sp.nb_atoms] -= self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
             else:
                 E_neutral=sp.thermal_capacity * e * state[self.species.nb + sp.nb_atoms]
                 rate[sp.nb_atoms] -= E_neutral * self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms] , sp.mass) * self.chamber.S_eff_neutrals() / self.chamber.V_chamber

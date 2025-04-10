@@ -147,6 +147,7 @@ class GlobalModel:
         #y0 = np.array([self.chamber.n_e_0, self.chamber.n_g_0, 0, self.chamber.T_e_0, self.chamber.T_g_0, 0])
         y0 = np.array([self.chamber.n_e_0, self.chamber.n_g_0, self.chamber.n_Xe_plus, self.chamber.T_e_0, self.chamber.T_g_0, 0])
         sol = solve_ivp(self.f_dy, (t0, tf), y0, method='LSODA', rtol=1e-8, atol=1e-15, first_step=5e-13, min_step=1e-15)    # , max_step=1e-7
+        #log_file_path=self.simulation_name
         self.var_tracker.save_tracked_variables()
         return sol
 
@@ -185,8 +186,11 @@ class GlobalModel:
             ## Returns
             power_array , list_of(`state` after long time)"""
         final_states = np.zeros((len(power_list), self.species.nb+3))  #shape = (y,x)
+        simulation_name = "all_reactions"
 
         for i, power in enumerate(power_list):
+            self.simulation_name = simulation_name + str(i)
+            self.var_tracker = VariableTracker("./logs", self.simulation_name+".json")
             self.electron_heating.power_absorbed_value=power
 
             sol = self.solve(0, tf)    # TODO Needs some testing

@@ -35,8 +35,6 @@ class GasInjection(Reaction):
         rate = self.injection_rates / self.chamber.V_chamber
         self.var_tracker.add_value_to_variable_list("density_change_gas_injection", rate)
         return rate
-    
-    #y a pas un problème dans la fonction ? parce que cela semble l'imposer à toutes les espèces...
 
     
     @override

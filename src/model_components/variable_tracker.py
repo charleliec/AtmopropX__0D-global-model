@@ -26,5 +26,6 @@ class VariableTracker:
 
     def save_tracked_variables(self):
         """Save in json file"""
+        #self.log_file_path = log_file_path
         with open(self.log_file_path, 'w') as file:
             json.dump(self.tracked_variables, file, indent=4)

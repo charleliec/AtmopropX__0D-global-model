@@ -7,6 +7,7 @@ from src.model_components.reactions.elastic_collision_with_electrons_reaction im
 from src.model_components.reactions.flux_to_walls_and_grids_reaction import FluxToWallsAndThroughGrids
 from src.model_components.reactions.gas_injection_reaction import GasInjection
 from src.model_components.reactions.electron_heating_by_coil_reaction import ElectronHeatingConstantAbsorbedPower
+from src.model_components.reactions.thermic_diffusion import ThermicDiffusion
 
 from src.model_components.specie import Species, Specie
 from src.model_components.constant_rate_calculation import get_K_func
@@ -24,14 +25,16 @@ def get_species_and_reactions(chamber):
 
     ### Excitation : OK 
 
-    exc_Xe = Excitation(species, "Xe", lambda T: Kexc(T), 11.6, chamber) 
-    #exc_Xe = Excitation(species, "Xe", get_K_func(species, "Xe", "exc_Xe"), 11.6, chamber) 
+    exc_Xe = Excitation(species, "Xe", get_K_func(species, "Xe", "Ionization_Xe"), 11.6, chamber) 
+    #exc_Xe = Excitation(species, "Xe", get_K_func(species, "Xe", "Ionization_Xe"), 11.6, chamber) 
 
     #get_K_func(species, "Xe", "exc_Xe")
     #lambda T: Kexc(T)
 
     ### Elastic Collision : OK
-    ela_elec_Xe = ElasticCollisionWithElectron(species, "Xe", lambda T : 1e-13, 0, chamber) # get_K_func(species, "Xe", "ela_elec_Xe")
+    ela_elec_Xe = ElasticCollisionWithElectron(species, "Xe", lambda T : 1e-13, 0, chamber) 
+    # get_K_func(species, "Xe", "ela_elec_Xe")
+    #lambda T : 1e-13
     
     ### Terme source : OK
     src_Xe = GasInjection(species, [0.0, 1.2e19, 0], 0.03, chamber) 
@@ -51,14 +54,18 @@ def get_species_and_reactions(chamber):
     ### Ionisation 
 
     #ion_Xe = Ionisation(species, "Xe", "Xe+", get_K_func(species, "Xe", "Ionization_Xe"), 12.127, chamber) 
-    ion_Xe = Ionisation(species, "Xe", "Xe+", lambda T: Kiz(T), 12.127, chamber) 
+    ion_Xe = Ionisation(species, "Xe", "Xe+", get_K_func(species, "Xe", "Ionization_Xe"), 12.127, chamber) 
     #get_K_func(species, "Xe", "Ionization_Xe")
     #lambda T: 2.2384710835071163e-15
     #lambda T: Kiz(T)
 
-    reaction_list = [out_Xe, src_Xe, ion_Xe, exc_Xe, ela_elec_Xe] #[exc_Xe, src_Xe] #[exc_Xe, src_Xe, out_Xe] 
+    ###Thermic diffusion
+    th_Xe = ThermicDiffusion(species,"Xe",0.0057,0.03,chamber)
 
-    #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 1e3, chamber) 
+    reaction_list = [out_Xe, src_Xe, ion_Xe, exc_Xe, ela_elec_Xe, th_Xe] #[exc_Xe, src_Xe] #[exc_Xe, src_Xe, out_Xe] 
+    #reaction_list=[ela_elec_Xe]
+
+    #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 0, chamber) 
     electron_heating = ElectronHeatingConstantAbsorbedPower(species, 1e3, chamber)
 
     return species, reaction_list, electron_heating
