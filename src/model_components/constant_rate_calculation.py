@@ -10,15 +10,18 @@ from src.model_components.util import load_csv, load_cross_section
 from src.model_components.specie import Specie, Species
 #from specie import Specie, Species
 
-def rate_constant(T_e, E, cs, m):
+def rate_constant(state, sp , cs):
     """Calculates a reaction rate constant """
     #T = T_e * k / e
-    v = np.sqrt(2 * E * e / m)  # electrons speed
-    a = (m / (2 * np.pi * e * T_e))**(3/2) * 4 * np.pi
-    f = cs * v**3 * np.exp(- m * v**2 / (2 * e * T_e)) 
-    k_rate = trapezoid(a*f, x=v)
-    return k_rate
-
+    T_e = state[len(state)/2]
+    v , a , f = [] , [] , []
+    result = []
+    for j in range(len(cs)):
+        v.append(np.sqrt(2 * cs[j][0] * cnst.e / cnst.m_e))
+        a.append((cnst.m_e / (2 * np.pi * cnst.e * T_e))**(3/2) * 4 * np.pi)
+        f.append(cs[j][1] * v[j]**3 * np.exp(- cnst.m_e * v[j]**2 / (2 * cnst.e * T_e)))
+        result.append(a[j] * f[j])
+    return trapezoid(result, x=v)
 
 def get_K_func(species,specie:str,reaction:str):
     """ specie: string, the specie involved (N, N2 or O2, O)
