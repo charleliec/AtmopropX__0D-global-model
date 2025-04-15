@@ -1,3 +1,4 @@
+
 import numpy as np 
 from numpy.typing import NDArray
 from scipy.constants import m_e, e, pi, k, epsilon_0 as eps_0, mu_0, c as c_light   # k is k_B -> Boltzmann constant
@@ -73,6 +74,7 @@ class GlobalModel:
                 dy_energies += reac.energy_change_rate(state)
                 if isinstance(reac, GeneralElasticCollision) :
                     sp, freq = reac.colliding_specie_and_collision_frequency(state)
+                    #trouver un moyen d'appeler les cs et E
                     collision_frequencies[sp.index] += freq
 
             self.var_tracker.add_value_to_variable_list("dy_energy_", dy_energies, "_before_heating")
@@ -173,6 +175,7 @@ class GlobalModel:
             for reac in self.reaction_set:
                 if isinstance(reac, GeneralElasticCollision) :
                     sp, freq = reac.colliding_specie_and_collision_frequency(final_state)
+                    #trouver un moyen d'appeler les cs et E
                     collision_frequencies[sp.index] = freq
             eps_p = self.eps_p(collision_frequencies, final_state)
 
