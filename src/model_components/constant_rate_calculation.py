@@ -10,16 +10,16 @@ from src.model_components.util import load_csv, load_cross_section
 from src.model_components.specie import Specie, Species
 #from specie import Specie, Species
 
-def rate_constant(state, sp , cs):
+def rate_constant(state, sp , E , cs):
     """Calculates a reaction rate constant """
     #T = T_e * k / e
     T_e = state[len(state)/2]
     v , a , f = [] , [] , []
     result = []
     for j in range(len(cs)):
-        v.append(np.sqrt(2 * cs[j][0] * cnst.e / cnst.m_e))
+        v.append(np.sqrt(2 * E[j] * cnst.e / cnst.m_e))
         a.append((cnst.m_e / (2 * np.pi * cnst.e * T_e))**(3/2) * 4 * np.pi)
-        f.append(cs[j][1] * v[j]**3 * np.exp(- cnst.m_e * v[j]**2 / (2 * cnst.e * T_e)))
+        f.append(cs[j] * v[j]**3 * np.exp(- cnst.m_e * v[j]**2 / (2 * cnst.e * T_e)))
         result.append(a[j] * f[j])
     return trapezoid(result, x=v)
 
