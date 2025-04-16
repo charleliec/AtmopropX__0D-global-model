@@ -63,6 +63,6 @@ class ElasticCollisionWithElectron(GeneralElasticCollision):
         return 1 - (omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  1j*nu_m_i)))
     
     @override
-    def colliding_specie_and_collision_frequency(self, state: NDArray[np.float64] , E , cross_sections):
-        return self.reactives[1], self.rate_constant(state , self.reactives[1] , cross_sections) * state[selfreactives[1].index]
+    def colliding_specie_and_collision_frequency(self, state: NDArray[np.float64]):
+        return self.reactives[1], self.rate_constant(state) * state[selfreactives[1].index]
     #ai changé self.reactives[1] en self.reactives[0]
