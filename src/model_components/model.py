@@ -74,9 +74,7 @@ class GlobalModel:
                 dy_energies += reac.energy_change_rate(state)
                 if isinstance(reac, GeneralElasticCollision) :
                     sp, freq = reac.colliding_specie_and_collision_frequency(state)
-                    #trouver un moyen d'appeler les cs et E
                     collision_frequencies[sp.index] += freq
-
             self.var_tracker.add_value_to_variable_list("dy_energy_", dy_energies, "_before_heating")
             # Energy given to the electrons via the coil
             dy_energies[0] += self.electron_heating.absorbed_power(state, collision_frequencies) / self.chamber.V_chamber
@@ -175,7 +173,6 @@ class GlobalModel:
             for reac in self.reaction_set:
                 if isinstance(reac, GeneralElasticCollision) :
                     sp, freq = reac.colliding_specie_and_collision_frequency(final_state)
-                    #trouver un moyen d'appeler les cs et E
                     collision_frequencies[sp.index] = freq
             eps_p = self.eps_p(collision_frequencies, final_state)
 
