@@ -81,7 +81,7 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
     and therefore that the current in the coil changes to maintain this power.
     """
 
-    def __init__(self, species: Species, power_absorbed: float, chamber: Chamber):
+    def __init__(self, species: Species, coil_current: float, chamber: Chamber):
         """
         Electrons heating class
             Inputs : 
@@ -90,14 +90,14 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
                 chamber : instance of class Chamber, contains the chamber characteristics
         """
         super().__init__(species, chamber)
-        self.power_absorbed = power_absorbed
+        self.coil_current = coil_current
 
     def normalised_concentrations(self , state: NDArray[np.float64]) :
         """Returns normalized concentrations (such that they sum up to 1)"""
         return state[:self.species.nb]/np.sum(state[:self.species.nb])
 
     def P_abs(self , R_ind):
-        return R_ind* self.chamber.I_coil**2 / 2
+        return R_ind* self.coil_current**2 / 2
     
     def R_ind(self, eps_p):
         '''plamsma resistance, used in calculating the power P_abs'''
@@ -118,17 +118,21 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
         #fonction utilisée dans f_dy
         normalized_c = self.normalised_concentrations(state)
         omega_pe_sq = (state[0] * e**2) / (m_e * eps_0)
-        epsilons_i = 1 - omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  1j*collision_frequencies))
+        # epsilons_i = 1 - omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  1j*collision_frequencies))
 
-        def equation(x):
-            x = x[0] + x[1]*1j     
-            value = np.sum(normalized_c*(epsilons_i-1)/(epsilons_i + 2*x)) + (1-x)/(3*x)   
-            return [np.real(value), np.imag(value)]
-        eps_p = fsolve(equation , [1, 0.01])
+        # def equation(x):
+        #     x = x[0] + x[1]*1j     
+        #     value = np.sum(normalized_c*(epsilons_i-1)/(epsilons_i + 2*x)) + (1-x)/(3*x)   
+        #     return [np.real(value), np.imag(value)]
+        # eps_p = fsolve(equation , [1, 0.01])
+        # eps_p = eps_p[0]+eps_p[1]*1j
+        eps_p = 1 - omega_pe_sq / (self.chamber.omega * (self.chamber.omega -  1j*np.sum(collision_frequencies)))
         self.var_tracker.add_value_to_variable("eps_p_real", np.real(eps_p))
         self.var_tracker.add_value_to_variable("eps_p_imag", np.imag(eps_p))
-        return eps_p[0]+eps_p[1]*1j
+        return eps_p
 
     @override
     def absorbed_power(self, state, collision_frequencies) -> float:
-        return self.P_abs(self.R_ind( self.eps_p(collision_frequencies, state)  ))
+        absorbed_power = self.P_abs(self.R_ind( self.eps_p(collision_frequencies, state)  ))
+        self.var_tracker.add_value_to_variable("absorbed_power", absorbed_power)
+        return absorbed_power

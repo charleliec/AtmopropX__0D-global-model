@@ -14,7 +14,7 @@ from src.model_components.util import load_csv, load_cross_section
 from src.model_components.specie import Specie, Species
 from src.model_components.reactions.reaction import Reaction
 from src.model_components.reactions.general_elastic_collision import GeneralElasticCollision
-from src.model_components.reactions.electron_heating_by_coil_reaction import ElectronHeatingConstantAbsorbedPower, ElectronHeating
+from src.model_components.reactions.electron_heating_by_coil_reaction import ElectronHeatingConstantAbsorbedPower, ElectronHeatingConstantCurrent, ElectronHeating
 from src.model_components.chamber_caracteristics import Chamber
 from src.model_components.variable_tracker import VariableTracker
 
@@ -75,10 +75,11 @@ class GlobalModel:
                     sp, freq = reac.colliding_specie_and_collision_frequency(state)
                     collision_frequencies[sp.index] += freq
 
-            self.var_tracker.add_value_to_variable_list("dy_energy_", dy_energies, "_before_heating")
+            self.var_tracker.add_value_to_variable_list("collision_frequencies", collision_frequencies)
             # Energy given to the electrons via the coil
-            dy_energies[0] += self.electron_heating.absorbed_power(state, collision_frequencies) / self.chamber.V_chamber
-            self.var_tracker.add_value_to_variable('power', self.electron_heating.absorbed_power(state, collision_frequencies) / self.chamber.V_chamber)
+            volumic_power_absorbed = self.electron_heating.absorbed_power(state, collision_frequencies) / self.chamber.V_chamber
+            dy_energies[0] += volumic_power_absorbed
+            self.var_tracker.add_value_to_variable('power', volumic_power_absorbed)
 
             self.var_tracker.add_value_to_variable_list("dy_energy_", dy_energies, "_atom")
             # total thermal capacity (in Joule / eV ) of all species with same number of atoms : sum of (3/2 or 5/2 * e * density)
@@ -104,8 +105,8 @@ class GlobalModel:
             self.var_tracker.add_value_to_variable('h_R', self.chamber.h_R(self.n_g_tot(state)))
             print(f" t={t}: {state}")
         except Exception as exc:
-            print(f"Error in f_dy: {exc}")
-            raise e
+            print(f"Error in f_dy with state = {state}: \n {exc}")
+            raise exc
 
         #self.var_tracker.add_value_to_variable("collision_frequencies", collision_frequencies)
         return dy
@@ -146,10 +147,10 @@ class GlobalModel:
                 total += state[i]
         return total
         
-    def solve(self, t0, tf):
+    def solve(self, t0, tf, initial_state):
         #y0 = np.array([self.chamber.n_e_0, self.chamber.n_g_0, 0, self.chamber.T_e_0, self.chamber.T_g_0, 0])
-        y0 = np.array([self.chamber.n_e_0, self.chamber.n_g_0, self.chamber.n_Xe_plus, self.chamber.T_e_0, self.chamber.T_g_0, 0])
-        sol = solve_ivp(self.f_dy, (t0, tf), y0, method='LSODA', rtol=1e-8, atol=1e-15, first_step=5e-13, min_step=1e-15)    # , max_step=1e-7
+        y0 = np.array(initial_state)  #np.array([self.chamber.n_e_0, self.chamber.n_g_0, 0, self.chamber.T_e_0, self.chamber.T_g_0, 0])
+        sol = solve_ivp(self.f_dy, (t0, tf), y0, method='BDF', rtol=1e-8, atol=1e-15, first_step=5e-10, min_step=1e-15)    # , max_step=1e-7
         #log_file_path=self.simulation_name
         self.var_tracker.save_tracked_variables()
         return sol
@@ -163,7 +164,7 @@ class GlobalModel:
         final_states = np.zeros((coil_currents.shape[0], self.species.nb+3))  #shape = (y,x)
 
         for i, I_coil in enumerate(coil_currents):
-            self.chamber.I_coil = I_coil
+            self.electron_heating.coil_current = I_coil
 
             sol = self.solve(0, tf)    # TODO Needs some testing
 

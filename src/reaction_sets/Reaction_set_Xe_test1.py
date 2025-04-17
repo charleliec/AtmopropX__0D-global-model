@@ -19,6 +19,8 @@ def get_species_and_reactions(chamber):
                     
     species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("Xe", 2.18e-25, 0, 1, 3/2), Specie("Xe+", 2.18e-25, e, 1, 3/2)])
 
+    init_state = [1e10, 1e21, 1e10, 2.7, 0.03, 0.001]
+
     def Kexc(state):
         T=state[species.nb]
         Eexc=11.6
@@ -71,9 +73,9 @@ def get_species_and_reactions(chamber):
     #reaction_list=[ela_elec_Xe]
 
     #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 0, chamber) 
-    electron_heating = ElectronHeatingConstantAbsorbedPower(species, 0, 0.45, chamber)
-    #electron_heating = ElectronHeatingConstantCurrent(species, 500, chamber)
+    #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 0, 0.45, chamber)
+    electron_heating = ElectronHeatingConstantCurrent(species, 10, chamber)
 
     # print([sp.name for sp in species.species if sp.charge == 0])
 
-    return species, reaction_list, electron_heating
+    return species, init_state, reaction_list, electron_heating

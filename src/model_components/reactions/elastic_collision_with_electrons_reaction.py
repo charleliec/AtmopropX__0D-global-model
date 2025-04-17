@@ -64,5 +64,4 @@ class ElasticCollisionWithElectron(GeneralElasticCollision):
     
     @override
     def colliding_specie_and_collision_frequency(self, state: NDArray[np.float64]):
-        return self.reactives[1], self.rate_constant(state) * state[0]
-    #ai changé self.reactives[1] en self.reactives[0]
+        return self.reactives[1], self.rate_constant(state) * state[self.reactives[1].index]

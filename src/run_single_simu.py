@@ -4,13 +4,14 @@ from scipy.constants import k, e, pi
 from src.model_components.model import GlobalModel
 from src.config import config_dict
 from src.model_components.chamber_caracteristics import Chamber
+#from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
 from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
 
 
 
 chamber = Chamber(config_dict)
-species, reactions_list, electron_heating = get_species_and_reactions(chamber)
-model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="all_reactions_power_null")
+species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber)
+model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="all_reac_N_O")
 
 #print(chamber.V_chamber)
 # print(chamber.S_eff_total(chamber.n_g_0))
@@ -24,7 +25,7 @@ model = GlobalModel(species, reactions_list, chamber, electron_heating, simulati
 # Solve the model
 try:
     print("Solving model...")
-    sol = model.solve(0, 0.3)  # TODO Needs some testing
+    sol = model.solve(0, 0.1, initial_state)  # TODO Needs some testing
     print("Model resolved !")
 except Exception as exception:
     print("Entering exception...")
