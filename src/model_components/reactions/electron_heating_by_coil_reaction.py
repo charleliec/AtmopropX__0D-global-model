@@ -99,6 +99,9 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
     def P_abs(self , R_ind):
         return R_ind* self.coil_current**2 / 2
     
+    def P_RF(self, R_ind):
+        return (R_ind + self.chamber.R_coil) * self.coil_current**2 / 2
+    
     def R_ind(self, eps_p):
         '''plamsma resistance, used in calculating the power P_abs'''
 
@@ -131,8 +134,13 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
         self.var_tracker.add_value_to_variable("eps_p_imag", np.imag(eps_p))
         return eps_p
 
+    def power_rf(self, state, collision_frequencies):
+        power_rf = self.P_RF(self.R_ind( self.eps_p(collision_frequencies, state)  ))
+        return power_rf
+
     @override
     def absorbed_power(self, state, collision_frequencies) -> float:
         absorbed_power = self.P_abs(self.R_ind( self.eps_p(collision_frequencies, state)  ))
         self.var_tracker.add_value_to_variable("absorbed_power", absorbed_power)
+        #self.var_tracker.add_value_to_variable("R_ind", self.R_ind(self.eps_p(collision_frequencies, state)))
         return absorbed_power

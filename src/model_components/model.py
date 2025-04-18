@@ -106,6 +106,8 @@ class GlobalModel:
             self.var_tracker.add_value_to_variable('total_ion_thrust', self.total_ion_thrust(state))
             self.var_tracker.add_value_to_variable('total_neutral_thrust', self.total_neutral_thrust(state))
             self.var_tracker.add_value_to_variable('total_thrust', self.total_thrust(state))
+            self.var_tracker.add_value_to_variable('power_absorbed', self.electron_heating.absorbed_power(state, collision_frequencies))
+            self.var_tracker.add_value_to_variable('u_B', self.chamber.u_B(state[self.species.nb],2.18e-25))
             print(f" t={t}: {state}")
         except Exception as exc:
             print(f"Error in f_dy with state = {state}: \n {exc}")
@@ -170,17 +172,21 @@ class GlobalModel:
         return sol
 
 
-    def solve_for_I_coil(self, coil_currents, tf = 5e-2):
+    def solve_for_I_coil(self, coil_currents, t0, tf, initial_state):
         """Calculates for a list of intensity in the coil the resulting power consumption and the resulting thrust.
             ## Returns
             power_array , list_of(`state` after long time)"""
-        power_array = np.zeros(coil_currents.shape[0])
-        final_states = np.zeros((coil_currents.shape[0], self.species.nb+3))  #shape = (y,x)
+        power_array = np.zeros(len(coil_currents))
+        final_states = np.zeros((len(coil_currents), self.species.nb+3))  #shape = (y,x)
+        simulation_name = self.simulation_name
 
         for i, I_coil in enumerate(coil_currents):
+            self.simulation_name = simulation_name + str(i)
+            self.var_tracker = VariableTracker("./logs", self.simulation_name+".json")
+
             self.electron_heating.coil_current = I_coil
 
-            sol = self.solve(0, tf)    # TODO Needs some testing
+            sol = self.solve(t0, tf, initial_state)    # TODO Needs some testing
 
             final_state = sol.y[:, -1]
 
@@ -188,12 +194,13 @@ class GlobalModel:
             for reac in self.reaction_set:
                 if isinstance(reac, GeneralElasticCollision) :
                     sp, freq = reac.colliding_specie_and_collision_frequency(final_state)
-                    collision_frequencies[sp.index] = freq
-            eps_p = self.eps_p(collision_frequencies, final_state)
+                    collision_frequencies[sp.index]  = freq
+            eps_p = self.electron_heating.eps_p(collision_frequencies, final_state)
 
             # calculation of P_abs : the power given by the antenna to the plasma
 
             power_array[i] = self.electron_heating.absorbed_power(final_state, collision_frequencies)   #self.P_abs(self.R_ind( eps_p  ))
+            #power_array[i] = self.electron_heating.power_rf(final_state, collision_frequencies)
 
             final_states[i] = final_state
             

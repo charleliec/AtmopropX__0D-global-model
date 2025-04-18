@@ -2,6 +2,8 @@ import numpy as np
 from scipy.constants import m_e, e, pi, k, epsilon_0 as eps_0, mu_0   # k is k_B -> Boltzmann constant
 from scipy.integrate import trapezoid, solve_ivp, odeint
 import matplotlib.pyplot as plt
+#from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
+
 
 #Local modules
 from src.model_components.util import load_csv, load_cross_section
@@ -42,8 +44,10 @@ if __name__ == "__main__":
     get_K_exc=get_K_func(species_list, "Xe", "exc_Xe")
     get_K_el=get_K_func(species_list, "Xe", "Elastic_Xe")
 
-    T=np.linspace(0.1, 1000)
+    T=np.linspace(0.1, 30)
     k_rate_ion=[get_K_ion(np.array([10^18,3*10^19,3*10^19,t,0.03])) for t in T]
+    k_rate_exc=[get_K_exc(np.array([10^18,3*10^19,3*10^19,t,0.03])) for t in T]
+    k_rate_el=[get_K_el(np.array([10^18,3*10^19,3*10^19,t,0.03])) for t in T]
     # k_rate_exc=get_K_exc(state)
     # k_rate_el=get_K_el(state)
 
@@ -68,10 +72,31 @@ if __name__ == "__main__":
         K_iz_2 = 6.73e-15 * (T_e)**0.5 * (-0.0001031*T_e**2 + 6.386 * np.exp(- E_iz/T_e))
         return 0.5 * (K_iz_1 + K_iz_2)
     
-    #plt.plot(T,[Kiz(t) for t in T], label="Chabert")
-    plt.plot(T,k_rate_ion, label="Nous")
-    plt.legend()
-    plt.grid()
+    def Kexc(T_e):
+        Eexc=11.6
+        return 1.2921e-13 * np.exp(-Eexc/T_e)
+
+
+    fig, ax = plt.subplots()
+    ax.plot(T,[1e-13 for t in T], label="Formules de l'article de P. Chabert")
+    ax.plot(T,k_rate_el, label="Avec les sections efficaces")
+    ax.set_xlabel("Température (eV)")
+    ax.set_ylabel(r"$K_{el}$ en $m^{-3}.s^{-1}$")
+    plt.title(r"$K_{el}$ en fonction de la température")
+
+    # axins = inset_axes(ax, width="30%", height="30%", loc='upper right')
+    # axins.plot(x, y)
+    # axins.plot(x, k_rate_ion)
+
+    # Définir les limites du zoom
+    # x1, x2, y1, y2 = 5, 12, 0, 0.57e-13
+    # axins.set_xlim(x1, x2)
+    # axins.set_ylim(y1, y2)
+
+    # mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
+
+    ax.legend()
+    ax.grid()
     plt.show()
 
     # print("K_el="+str(K_el))
