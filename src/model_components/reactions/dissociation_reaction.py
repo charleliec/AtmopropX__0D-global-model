@@ -14,7 +14,7 @@ class Dissociation(Reaction):
     In reactives, electron must be in first position and colliding_specie next.
     """
 
-    def __init__(self, species: Species, rate_constant, energy_threshold: float, chamber: Chamber):
+    def __init__(self, species: Species, rate_constant, energy_threshold: float, stoechio_coeffs: list, chamber: Chamber):
         """ Dissociation class
         Parameters :
         ------------- 
@@ -23,7 +23,7 @@ class Dissociation(Reaction):
         rate_constant : Function taking as argument state [n_e, n_N2, ..., n_N+, T_e, T_monoato, ..., T_diato]
         energy_threshold : Energy threshold of electron so that reaction occurs
         """
-        super().__init__(species, [species.names[0], species.names], [species.names[0], species.names], chamber)
+        super().__init__(species, [species.names[0], species.names], [species.names[0], species.names], chamber, stoechio_coeffs)
         self.rate_constant = rate_constant
         self.energy_threshold = energy_threshold
 
