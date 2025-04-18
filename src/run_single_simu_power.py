@@ -9,7 +9,7 @@ from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
 
 
 chamber = Chamber(config_dict)
-species, reactions_list, electron_heating = get_species_and_reactions(chamber)
+species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber)
 model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="all_reactions")
 
 #print(chamber.V_chamber)
@@ -25,9 +25,11 @@ model = GlobalModel(species, reactions_list, chamber, electron_heating, simulati
 try:
     print("Solving model...")
     #power_list = np.linspace(0,1600,400)
-    power_list = [0, 200, 400, 600, 800, 1e3, 1.2e3, 1.4e3, 1.6e3]
-    efficiency_list = [0.8, 0.7, 0.6, 0.5, 0.45, 0.42, 0.4, 0.35, 0.31]
-    final_state = model.solve_for_power_fixed(power_list, efficiency_list, tf = 1)  # TODO Needs some testing
+    t0, tf = 0, 1
+    power_list = [50, 100, 200, 400, 600, 800, 1e3, 1.2e3, 1.4e3, 1.6e3]
+    #efficiency_list = [0.78, 0.72, 0.68, 0.6, 0.5, 0.48, 0.45, 0.41, 0.37, 0.35]
+    efficiency_list = [0.79, 0.75, 0.67, 0.58, 0.53, 0.46, 0.42, 0.4, 0.37, 0.35]
+    final_state = model.solve_for_power_fixed(power_list, efficiency_list, t0, tf, initial_state)  # TODO Needs some testing
     print("Model resolved !")
 except Exception as exception:
     print("Entering exception...")

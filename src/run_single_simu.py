@@ -25,7 +25,7 @@ model = GlobalModel(species, reactions_list, chamber, electron_heating, simulati
 # Solve the model
 try:
     print("Solving model...")
-    sol = model.solve(0, 0.1, initial_state)  # TODO Needs some testing
+    sol = model.solve(0, 1, initial_state)  # TODO Needs some testing
     print("Model resolved !")
 except Exception as exception:
     print("Entering exception...")

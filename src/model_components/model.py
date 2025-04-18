@@ -103,6 +103,9 @@ class GlobalModel:
             self.var_tracker.add_value_to_variable_list("energy_", energies, "_atom")
             self.var_tracker.add_value_to_variable('h_L', self.chamber.h_L(self.n_g_tot(state)))
             self.var_tracker.add_value_to_variable('h_R', self.chamber.h_R(self.n_g_tot(state)))
+            self.var_tracker.add_value_to_variable('total_ion_thrust', self.total_ion_thrust(state))
+            self.var_tracker.add_value_to_variable('total_neutral_thrust', self.total_neutral_thrust(state))
+            self.var_tracker.add_value_to_variable('total_thrust', self.total_thrust(state))
             print(f" t={t}: {state}")
         except Exception as exc:
             print(f"Error in f_dy with state = {state}: \n {exc}")
@@ -124,10 +127,21 @@ class GlobalModel:
     def total_ion_thrust(self , state ) :
         '''Calculates the total amount of thrust generated'''
         total_thrust = 0
-        for i in(range(1,len(state)/2)):
-            if self.species.species[i].charge != 0 :
-                total_thrust += self.thrust_i( state[len(state)/2] , state[0] , state[i] , self.species.species[i].mass , self.species.species[i].charge)
-
+        for sp in self.species.species[1:]:
+            if sp.charge != 0 :
+               total_thrust += self.chamber.gamma_ion(state[sp.index], state[self.species.nb], sp.mass) * self.chamber.h_L(self.n_g_tot(state)) * sp.mass * self.chamber.v_beam(sp.mass, sp.charge) * self.chamber.beta_i * self.chamber.S_grid
+        return total_thrust
+    
+    def total_neutral_thrust(self,state):
+        total_thrust = 0
+        for sp in self.species.species:
+            if sp.charge == 0:
+                T_neutral = state[self.species.nb + sp.nb_atoms]
+                total_thrust += self.chamber.gamma_neutral(state[sp.index], T_neutral, sp.mass) * sp.mass * self.chamber.S_eff_neutrals() * np.sqrt(8*e*T_neutral/(pi*sp.mass)) 
+        return total_thrust
+    
+    def total_thrust(self,state):
+        return self.total_neutral_thrust(state) + self.total_ion_thrust(state)
 
     def total_ion_current(self , state ) :
         '''Calculates the total amount of ion current toxards the grids'''
@@ -185,7 +199,7 @@ class GlobalModel:
             
         return power_array, final_states
     
-    def solve_for_power_fixed(self, power_list, efficiency_list, tf = 1):
+    def solve_for_power_fixed(self, power_list, efficiency_list, t0, tf, initial_state):
         """Calculates for a list of power absorbed in the coil the resulting stationary values of different variables.
             ## Returns
             power_array , list_of(`state` after long time)"""
@@ -197,7 +211,7 @@ class GlobalModel:
             self.var_tracker = VariableTracker("./logs", self.simulation_name+".json")
             self.electron_heating.power_absorbed_value = power * efficiency_list[i]
 
-            sol = self.solve(0, tf)    # TODO Needs some testing
+            sol = self.solve(t0, tf, initial_state)    # TODO Needs some testing
 
             final_state = sol.y[:, -1]
 
