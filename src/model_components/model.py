@@ -108,6 +108,7 @@ class GlobalModel:
             self.var_tracker.add_value_to_variable('total_thrust', self.total_thrust(state))
             self.var_tracker.add_value_to_variable('power_absorbed', self.electron_heating.absorbed_power(state, collision_frequencies))
             self.var_tracker.add_value_to_variable('u_B', self.chamber.u_B(state[self.species.nb],2.18e-25))
+            self.var_tracker.add_value_to_variable('ion_current', self.total_ion_current(state))
             print(f" t={t}: {state}")
         except Exception as exc:
             print(f"Error in f_dy with state = {state}: \n {exc}")
@@ -148,9 +149,9 @@ class GlobalModel:
     def total_ion_current(self , state ) :
         '''Calculates the total amount of ion current toxards the grids'''
         total_current = 0
-        for i in(range(1,len(state)/2)):
-            if self.species.species[i].charge != 0 :
-                total_current += self.j_i( state[len(state)/2] , state[0] , state[i] , self.species.species[i].mass , self.species.species[i].charge)
+        for sp in self.species.species[1:]:
+            if sp.charge != 0 :
+                total_current += e * self.chamber.gamma_ion(state[sp.index], state[self.species.nb], sp.mass) * self.chamber.h_L(self.n_g_tot(state))
         return total_current
 
     def n_g_tot (self, state) :
