@@ -40,6 +40,7 @@ class GasInjection(Reaction):
     @override
     def energy_change_rate(self, state):
         rate = np.zeros(3)
+        #print([sp.name for sp in self.products])
 
         for sp in self.products:
             rate[sp.nb_atoms] += sp.thermal_capacity * self.injection_rates[sp.index] * e * self.T_injection / self.chamber.V_chamber

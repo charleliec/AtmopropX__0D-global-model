@@ -10,7 +10,7 @@ from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
 
 chamber = Chamber(config_dict)
 species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber)
-model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="all_reac_current")
+model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="all_reac_power_rf")
 
 #print(chamber.V_chamber)
 # print(chamber.S_eff_total(chamber.n_g_0))
@@ -26,11 +26,12 @@ try:
     print("Solving model...")
     #power_list = np.linspace(0,1600,400)
     t0, tf = 0, 1
-    #power_list = [50, 100, 200, 400, 600, 800, 1e3, 1.2e3, 1.4e3, 1.6e3]
-    coil_currents = [2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    power_list = [50, 100, 200, 400, 600, 800, 1e3, 1160, 1.2e3, 1.4e3, 1.6e3]
+    #coil_currents = [2, 3, 5, 10, 15, 20, 26, 30, 35, 40, 45, 50, 55]
     #efficiency_list = [0.78, 0.72, 0.68, 0.6, 0.5, 0.48, 0.45, 0.41, 0.37, 0.35]
     #efficiency_list = [0.79, 0.75, 0.67, 0.58, 0.53, 0.46, 0.42, 0.4, 0.37, 0.35]
-    power_array, final_state = model.solve_for_I_coil(coil_currents, t0, tf, initial_state) # TODO Needs some testing
+    final_state = model.solve_for_RF_power_fixed(power_list, t0, tf, initial_state) # TODO Needs some testing
+    #final_state = model.solve_for_I_coil(coil_currents, t0, tf, initial_state)
     print("Model resolved !")
 except Exception as exception:
     print("Entering exception...")

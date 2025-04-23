@@ -84,7 +84,10 @@ class GlobalModel:
 
             self.var_tracker.add_value_to_variable("collision_frequency", collision_frequency)
             # Energy given to the electrons via the coil
-            volumic_power_absorbed = self.electron_heating.absorbed_power(state, collision_frequency) / self.chamber.V_chamber
+            #a=1e-13 * self.n_g_tot(state)
+            #collision_frequencies = np.array([0.0, a, 0.0])
+            #self.var_tracker.add_value_to_variable('a_list', a)
+            volumic_power_absorbed = self.electron_heating.absorbed_power(state, collision_frequencies) / self.chamber.V_chamber
             dy_energies[0] += volumic_power_absorbed
             self.var_tracker.add_value_to_variable('power', volumic_power_absorbed)
 
@@ -185,7 +188,7 @@ class GlobalModel:
         """Calculates for a list of intensity in the coil the resulting power consumption and the resulting thrust.
             ## Returns
             power_array , list_of(`state` after long time)"""
-        power_array = np.zeros(len(coil_currents))
+        #power_array = np.zeros(len(coil_currents))
         final_states = np.zeros((len(coil_currents), self.species.nb+3))  #shape = (y,x)
         simulation_name = self.simulation_name
 
@@ -199,20 +202,20 @@ class GlobalModel:
 
             final_state = sol.y[:, -1]
 
-            collision_frequencies = np.zeros(self.species.nb)
-            for reac in self.reaction_set:
-                if isinstance(reac, GeneralElasticCollision) :
-                    sp, freq = reac.colliding_specie_and_collision_frequency(final_state)
-                    collision_frequencies[sp.index]  += freq
+            # collision_frequencies = np.zeros(self.species.nb)
+            # for reac in self.reaction_set:
+            #     if isinstance(reac, GeneralElasticCollision) :
+            #         sp, freq = reac.colliding_specie_and_collision_frequency(final_state)
+            #         collision_frequencies[sp.index]  += freq
 
             # calculation of P_abs : the power given by the antenna to the plasma
 
-            power_array[i] = self.electron_heating.absorbed_power(final_state, collision_frequencies)   #self.P_abs(self.R_ind( eps_p  ))
+            #power_array[i] = self.electron_heating.absorbed_power(final_state, collision_frequencies)   #self.P_abs(self.R_ind( eps_p  ))
             #power_array[i] = self.electron_heating.power_rf(final_state, collision_frequencies)
 
             final_states[i] = final_state
             
-        return power_array, final_states
+        return final_states
     
     def solve_for_power_fixed(self, power_list, efficiency_list, t0, tf, initial_state):
         """Calculates for a list of power absorbed in the coil the resulting stationary values of different variables.

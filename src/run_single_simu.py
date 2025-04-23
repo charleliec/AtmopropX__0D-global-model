@@ -5,7 +5,8 @@ from src.model_components.model import GlobalModel
 from src.config import config_dict
 from src.model_components.chamber_caracteristics import Chamber
 #from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
-from src.reaction_sets.reaction_set_N_et_O import get_species_and_reactions
+from src.reaction_sets.Reaction_set_Xe_test1 import get_species_and_reactions
+#from src.reaction_sets.reaction_set_N_et_O import get_species_and_reactions
 
 
 
