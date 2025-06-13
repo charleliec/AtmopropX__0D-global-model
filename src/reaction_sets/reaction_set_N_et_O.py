@@ -6,6 +6,7 @@ Created on Wed Jan  8 14:41:30 2025
 """
 
 from scipy.constants import pi, e, k, epsilon_0 as eps_0, c, m_e
+import numpy as np
 from src.model_components.reactions.excitation_reaction import Excitation
 from src.model_components.reactions.ionisation_reaction import Ionisation
 from src.model_components.reactions.dissociation_reaction import Dissociation
@@ -40,6 +41,7 @@ def get_species_and_reactions(chamber):
     initial_state = [initial_state_dict[specie.name] for specie in species.species] + [initial_state_dict["T_e"], initial_state_dict["T_mono"], initial_state_dict["T_diato"]]
     #initial_state = [1e15, 5e14, 8e13, 1e10, 1e10, 1e10, 2e13, 1e15, 1e10, 4.0, 0.03, 0.03] # [e, N2, N, N2+, N+, O2+, O2, O, O+, T_e, T_monoatomique, T_diatomique]
     #peut-être changer initial_state parce qu'il faut qu'il y ait un nb suffisant d'électrons
+    initial_state = [1e18, 1e19, 1e19, 1e18, 1e18, 1e18, 1e19, 1e19, 1e18, 2.7, 0.03, 0.03]
 
 
 #  ██▀ ▀▄▀ ▄▀▀ █ ▀█▀ ▄▀▄ ▀█▀ █ ▄▀▄ █▄ █
@@ -100,7 +102,16 @@ def get_species_and_reactions(chamber):
 
 #  ▄▀  ▄▀▄ ▄▀▀   █ █▄ █   █ ██▀ ▄▀▀ ▀█▀ █ ▄▀▄ █▄ █
 #  ▀▄█ █▀█ ▄██   █ █ ▀█ ▀▄█ █▄▄ ▀▄▄  █  █ ▀▄▀ █ ▀█
-    injection_rates = [1e10, 5e14, 8e13, 1e10, 1e10, 1e10, 2e13, 1e15, 1e10] #à revoir
+    idx_O = species_list.get_index_by_name("O")
+    idx_O2 = species_list.get_index_by_name("O2")
+    idx_N2 = species_list.get_index_by_name("N2")
+    idx_N = species_list.get_index_by_name("N")
+    #print(idx_N)
+    injection_rates = np.array([0.0 for _ in range(species_list.nb)])
+    injection_rates[idx_O] = 1.2e19 #8.8e16
+    injection_rates[idx_O2] = 1.2e19 #2.6e15
+    injection_rates[idx_N] = 1.2e19 #7.9e14
+    injection_rates[idx_N2] =  1.2e19 #5.3e16 #éventuellement problème car pas très élevé ou pas les bonnes valeurs
     T_injection = 0.03 #à revoir
     gas_injection = GasInjection(species, injection_rates, T_injection, chamber)
 

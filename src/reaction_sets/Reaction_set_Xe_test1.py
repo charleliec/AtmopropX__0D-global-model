@@ -39,6 +39,7 @@ def get_species_and_reactions(chamber):
     ela_elec_Xe = ElasticCollisionWithElectron(species, "Xe", get_K_func(species, "Xe", "Elastic_Xe"), 0, chamber) 
     # get_K_func(species, "Xe", "ela_elec_Xe")
     #lambda T : 1e-13
+    #lambda T : 3e-13
     
     ### Terme source : OK
     src_Xe = GasInjection(species, [0.0, 1.2e19, 0.0], 0.03, chamber) 
@@ -72,10 +73,12 @@ def get_species_and_reactions(chamber):
     reaction_list = [out_Xe, src_Xe, ion_Xe, exc_Xe, ela_elec_Xe, th_Xe, in_Xe] #[exc_Xe, src_Xe] #[exc_Xe, src_Xe, out_Xe] 
     #reaction_list=[ela_elec_Xe]
 
-    #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 0, chamber) 
-    electron_heating = ElectronHeatingConstantRFPower(species, 1180, chamber)
-    #electron_heating = ElectronHeatingConstantCurrent(species, 10, chamber)
+    #electron_heating = ElectronHeatingConstantAbsorbedPower(species, 1160, 0.4, chamber) 
+    electron_heating = ElectronHeatingConstantRFPower(species, 1160, chamber)
+    #electron_heating = ElectronHeatingConstantCurrent(species, 26, chamber)
+    #electron_heating = ElectronHeatingConstantRFPower(species, 1000, chamber)
 
     # print([sp.name for sp in species.species if sp.charge == 0])
+    #print(electron_heating.R_ind(electron_heating.eps_p(3.13e6, init_state)))
 
     return species, init_state, reaction_list, electron_heating

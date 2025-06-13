@@ -109,8 +109,8 @@ class ElectronHeatingConstantCurrent(ElectronHeating):
         b = 1j * k_p * self.chamber.R * jv(1, k_p * self.chamber.R) / (eps_p * jv(0, k_p * self.chamber.R))
         R_ind = a * np.real(b)
         self.var_tracker.add_value_to_variable("R_ind", R_ind)
-        self.var_tracker.add_value_to_variable("R_ind_a", a)
-        self.var_tracker.add_value_to_variable("R_ind_b", np.real(b))
+        #self.var_tracker.add_value_to_variable("R_ind_a", a)
+        #self.var_tracker.add_value_to_variable("R_ind_b", np.real(b))
         return R_ind
     
     def eps_p (self, collision_frequency , state) :
