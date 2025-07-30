@@ -28,7 +28,7 @@ class ThermicDiffusion(Reaction):
         
         Inputs : 
             species : instance of class Species, lists all species present 
-            kappa : Function taking as input the atom temperature and returning the diffusion coefficient
+            kappa : dict whose keys are species name and values are Functions taking as input the atom temperature and returning the diffusion coefficient
             temp_wall : temperature of the walls
             chamber : instance of the Chamber class with the Chamber caracteristics
         """
@@ -52,7 +52,8 @@ class ThermicDiffusion(Reaction):
         lambda_0 = self.chamber.L/2.405 + self.chamber.R/np.pi
 
         for sp in self.species.species[1:] :   # electron are skipped because handled before
-            rate[sp.nb_atoms] -= self.kappa(state[self.species.nb+sp.nb_atoms]) * e * (state[self.species.nb+sp.nb_atoms] - self.temp_wall) * self.chamber.S_total/(k_B *lambda_0*self.chamber.V_chamber)
+            if sp.charge == 0:
+                rate[sp.nb_atoms] -= self.kappa[self.species.names[sp.index]](state[self.species.nb+sp.nb_atoms]) * e * (state[self.species.nb+sp.nb_atoms] - self.temp_wall) * self.chamber.S_total/(k_B *lambda_0*self.chamber.V_chamber)
 
         self.var_tracker.add_value_to_variable_list('energy_change_thermic_diffusion', rate) # type: ignore
 
