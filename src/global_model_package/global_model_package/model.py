@@ -62,7 +62,8 @@ class GlobalModel:
                 state[idx] = 0.0
         for var in state[self.species.nb:]:
             if var < 0:
-                raise ValueError(f"Negative temperature in state at t={t}: {state}")
+                return state * 0.
+                #raise ValueError(f"Negative temperature in state at t={t}: {state}")
 
         try:
             densities = state[:self.species.nb]
@@ -118,7 +119,8 @@ class GlobalModel:
             # self.var_tracker.add_value_to_variable('total_thrust', self.total_thrust(state))
             # self.var_tracker.add_value_to_variable('u_B', self.chamber.u_B(state[self.species.nb],2.18e-25))
             # self.var_tracker.add_value_to_variable('ion_current', self.total_ion_current(state))
-            string = ( f"\nt={t:15.9e}" 
+            string = ( f"\nt={t:15.9e}"
+                + "\n       " + " ".join([f"{val.name:^12}" for val in self.species.species]) + " " +  " ".join([f"{val:^12}" for val in ["Te", "Tmono", "Tdiato"]])
                 + "\nstate :" + " ".join([f"{val:12.5e}" for val in state])
                 + "\n  dy  :" + " ".join([f"{val:12.5e}" for val in dy]) )
             print(string)
@@ -146,7 +148,7 @@ class GlobalModel:
         total_thrust = 0
         for sp in self.species.species[1:]:
             if sp.charge != 0 :
-               total_thrust += self.chamber.gamma_ion(state[sp.index], state[self.species.nb], sp.mass) * self.chamber.h_L(self.n_g_tot(state)) * sp.mass * self.chamber.v_beam(sp.mass, sp.charge) * self.chamber.beta_i * self.chamber.S_grid
+               total_thrust += self.chamber.gamma_ion(state[sp.index], state[self.species.nb], sp.mass) * self.chamber.h_L(self.n_g_tot(state)) * sp.mass * self.chamber.v_beam(sp.mass, sp.charge) * self.chamber.beta_i * self.chamber.S_gridded_wall
         return total_thrust
     
     def total_neutral_thrust(self,state):
@@ -173,9 +175,9 @@ class GlobalModel:
         total = 0
         #for i in(range(len(state)/2)) :
         for i in range(self.species.nb):
-            #if self.specie.charge(self.species.species[i]) == 0 :
-            if self.species.species[i].charge == 0:
-                total += state[i]
+            # if self.species.species[i].charge == 0:
+            #     total += state[i]
+            total += state[i]
         return total
         
     def solve(self, t0: float, tf: float, initial_state: NDArray[np.float64] | list[float], args: Tuple[Callable[[float, NDArray[np.float64], NDArray[np.float64]], NDArray[np.float64]] | None, Callable[[float, NDArray[np.float64], NDArray[np.float64]], NDArray[np.float64]] | None] | None=None):

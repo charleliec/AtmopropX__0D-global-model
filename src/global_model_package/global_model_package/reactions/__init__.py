@@ -14,6 +14,7 @@ from .elastic_collision_with_electrons_reaction import ElasticCollisionWithElect
 
 from .flux_to_walls_and_grids_reaction import FluxToWallsAndThroughGrids
 from .pressure_balance_flux_to_walls_reaction import PressureBalanceFluxToWalls
+from .open_wall_pressure_balance_flux_to_walls_reaction import OpenWallPressureBalanceFluxToWalls
 from .gas_injection_reaction import GasInjection
 from .electron_heating_by_coil_reaction import ElectronHeating, ElectronHeatingConstantAbsorbedPower, ElectronHeatingConstantCurrent, ElectronHeatingConstantRFPower
 
@@ -32,6 +33,8 @@ __all__ = [
 
     'FluxToWallsAndThroughGrids',
     'PressureBalanceFluxToWalls',
+    'OpenWallPressureBalanceFluxToWalls',
+
     'GasInjection',
     'ElectronHeating',
     'ElectronHeatingConstantAbsorbedPower',

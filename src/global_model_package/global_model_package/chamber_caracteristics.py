@@ -11,14 +11,14 @@ class Chamber(object):
 
     def __init__(self, config_dict):
         # Geometry
-        self.R      = config_dict["R"]
-        self.L      = config_dict["L"]
+        self.R: float = config_dict["R"]
+        self.L: float = config_dict["L"]
         self.V_chamber = pi * self.R**2 * self.L
         #self.V_chamber=0.5
         #self.s      = config_dict["s"]
-        self.S_grid = pi * self.R**2
-        self.S_walls = pi * self.R * self.L
-        self.S_total = 2 * self.S_grid + self.S_walls
+        self.S_gridded_wall = pi * self.R**2
+        self.S_cylindrical_wall: float = pi * self.R * self.L
+        self.S_total = 2 * self.S_gridded_wall + self.S_cylindrical_wall
 
         # Electrical heating
         self.omega  = config_dict["omega"]
@@ -67,11 +67,11 @@ class Chamber(object):
         """Calculates pressure in steady state without any plasma.
         T : Temperature in steady state
         v : mean velocity of gas in steady state"""
-        return (4 * k * T * self.Q_g) / (v * self.beta_i * self.S_grid)
+        return (4 * k * T * self.Q_g) / (v * self.beta_i * self.S_gridded_wall)
 
     def S_eff_neutrals(self):
         """Effective surface through which neutrals leaves the chanber through the grids"""
-        return self.beta_g * self.S_grid
+        return self.beta_g * self.S_gridded_wall
 
     # TODO : n_g c'est quoi ? densité du gaz considéré ou tout le gaz ?
 
