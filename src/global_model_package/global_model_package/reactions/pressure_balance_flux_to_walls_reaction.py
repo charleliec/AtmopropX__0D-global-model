@@ -38,9 +38,9 @@ class PressureBalanceFluxToWalls(Reaction):
         total = 0
         #for i in(range(len(state)/2)) :
         for i in range(self.species.nb):
-            #if self.specie.charge(self.species.species[i]) == 0 :
-            if self.species.species[i].charge == 0:
-                total += state[i]
+            # if self.species.species[i].charge == 0:
+            #     total += state[i]
+            total += state[i]
         return total
 
     @override
