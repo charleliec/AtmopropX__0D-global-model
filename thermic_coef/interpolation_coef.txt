@@ -1,0 +1,15 @@
+N interpolation:
+Paramètre 'a' ajusté: 1.3722 (Erreur standard: 0.0879)
+Paramètre 'b' ajusté: 0.7143 (Erreur standard: 0.0079)
+
+N2 interpolation:
+Paramètre 'a' ajusté: 1.1153 (Erreur standard: 0.0348)
+Paramètre 'b' ajusté: 0.7217 (Erreur standard: 0.0038)
+
+O interpolation:
+Paramètre 'a' ajusté: 1.9054 (Erreur standard: 0.0425)
+Paramètre 'b' ajusté: 0.6750 (Erreur standard: 0.0028)
+
+O2 interpolation:
+Paramètre 'a' ajusté: 0.8792 (Erreur standard: 0.0121)
+Paramètre 'b' ajusté: 0.7681 (Erreur standard: 0.0017)

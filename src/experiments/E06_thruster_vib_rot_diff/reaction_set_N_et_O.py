@@ -82,6 +82,7 @@ def get_species_and_reactions(chamber):
     ion_N = Ionisation(species, "N", "N+", get_K_func(species, "N", "ion_N"), 14.80, chamber)
     ion_N2 = Ionisation(species, "N2", "N2+", get_K_func(species, "N2", "ion_N2"), 15.60, chamber)
     ion_O2 = Ionisation(species, "O2", "O2+", get_K_func(species, "O2", "ion_O2"), 12.10, chamber)
+    ion_O = Ionisation(species, "O", "O+", get_K_func(species,"O", "ion_O"), 13.60, chamber)
 
 #  ██▀ █   ▄▀▄ ▄▀▀ ▀█▀ █ ▄▀▀   ▄▀▀ ▄▀▄ █   █   █ ▄▀▀ █ ▄▀▄ █▄ █ ▄▀▀
 #  █▄▄ █▄▄ █▀█ ▄██  █  █ ▀▄▄   ▀▄▄ ▀▄▀ █▄▄ █▄▄ █ ▄██ █ ▀▄▀ █ ▀█ ▄██  # * complete
@@ -130,10 +131,10 @@ def get_species_and_reactions(chamber):
 #   █  █ █ █▄▄ █▀▄ █ ▀ █ █ ▀▄▄   █▄▀ █ █▀ █▀ ▀▄█ ▄██ █ ▀▄▀ █ ▀█  
     #kappa = lambda T_i : 4.4e-5 * (e / k_B * T_i)**0.8  # noqa: E731
     kappa = dict()
-    kappa["N"] = lambda T_i : 3.95e-5 * (e/k_B * T_i)**0.691
-    kappa["N2"] = lambda T_i : 2.06e-5 * (e/k_B * T_i)**0.754
-    kappa["O"] =  lambda T_i : 4.41e-5 * (e/k_B * T_i)**0.679
-    kappa["O2"] = lambda T_i : 1.66e-5 * (e/k_B * T_i)**0.798
+    kappa["N"] = lambda T_i : 1.75*3.95e-4 * (e/k_B * T_i)**0.691 #3.95e-5 * (e/k_B * T_i)**0.691
+    kappa["N2"] = lambda T_i : 1.75*2.06e-4 * (e/k_B * T_i)**0.754 #2.06e-5 * (e/k_B * T_i)**0.754
+    kappa["O"] =  lambda T_i : 1.75*4.41e-4 * (e/k_B * T_i)**0.679 #4.41e-5 * (e/k_B * T_i)**0.679
+    kappa["O2"] = lambda T_i : 1.75*1.66e-4 * (e/k_B * T_i)**0.798 #1.66e-5 * (e/k_B * T_i)**0.798
     #kappa = lambda T_i : 0.0
     th_diff = ThermicDiffusion(species, kappa, 0.03, chamber)
 
@@ -146,10 +147,10 @@ def get_species_and_reactions(chamber):
         exc1_O, exc2_O, exc3_O, exc4_O, exc5_O, exc6_O, exc7_O, exc8_O, exc9_O,
         *vib_exc_N2_list, *vib_exc_O2_list, *rot_exc_N2_list, *rot_exc_O2_list,   # * is used to unpack lists (similar to *args in functions)
         ela_N, ela_N2, ela_O, ela_O2, 
-        ion_N, ion_O2, ion_N2,
+        ion_N, ion_O2, ion_N2, ion_O,
         diss1_O2, diss2_O2, diss_N2,
         out_flux, gas_injection, inelastic_collisions, 
-        #th_diff
+        th_diff
     ]
 
 #  ██▀ █   ██▀ ▄▀▀ ▀█▀ █▀▄ ▄▀▄ █▄ █   █▄█ ██▀ ▄▀▄ ▀█▀ █ █▄ █ ▄▀    ██▄ ▀▄▀   ▀█▀ █▄█ ██▀   ▄▀▀ ▄▀▄ █ █    
