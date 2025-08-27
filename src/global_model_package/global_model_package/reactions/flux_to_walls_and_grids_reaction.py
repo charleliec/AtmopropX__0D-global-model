@@ -38,6 +38,15 @@ class FluxToWallsAndThroughGrids(Reaction):
             if self.species.species[i].charge == 0:
                 total += state[i]
         return total
+    
+    def phi_sheath(self, state, beta):
+        s = 0.0
+        for sp in self.species.species[1:]:
+            if sp.charge != 0:
+                s += state[sp.index] * np.sqrt(m_e/sp.mass)
+        a = np.sqrt(2 * np.pi) * (1 - beta) * s
+        return state[self.species.nb] * np.log(state[0]/a)
+
 
     @override
     def density_change_rate(self, state):
@@ -64,7 +73,9 @@ class FluxToWallsAndThroughGrids(Reaction):
 
         rate = np.zeros(3)
 
-        E_kin = 7*e*state[self.species.nb]
+        #E_kin = 7*e*state[self.species.nb]
+        E_kin_1 = (5/2 * e * state[self.species.nb] + e*self.phi_sheath(state, 0))
+        E_kin_2 = (5/2 * e * state[self.species.nb] + e*self.phi_sheath(state, self.chamber.beta_i))
 
 
         # * energy loss for ions neglected for now because missing energy of ion
@@ -77,7 +88,14 @@ class FluxToWallsAndThroughGrids(Reaction):
                 E_neutral=sp.thermal_capacity * e * state[self.species.nb + sp.nb_atoms]
                 rate[sp.nb_atoms] -= E_neutral * self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms] , sp.mass) * self.chamber.S_eff_neutrals() / self.chamber.V_chamber
         #gamma_e = state[0]*self.chamber.u_B(state[self.species.nb], 2.18e-25)
-        rate[0] -= E_kin * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
+
+        #rate[0] -= E_kin * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
+        S1 = np.pi * (self.chamber.R)**2
+        S2 = 2*np.pi * self.chamber.L * self.chamber.R
+        
+        rate[0] -= E_kin_1 * gamma_e * (S1 * self.chamber.h_L(self.n_g_tot(state)) + S2 * self.chamber.h_R(self.n_g_tot(state)) )/self.chamber.V_chamber
+        rate[0] -= E_kin_2 * gamma_e * self.chamber.S_grid * self.chamber.h_L(self.n_g_tot(state))/self.chamber.V_chamber
+
         self.var_tracker.add_value_to_variable_list("energy_change_flux_to_walls_and_through_grids", rate)
         return rate
 
