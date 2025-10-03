@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy.constants import pi, e, k as k_B, epsilon_0 as eps_0, c, m_e
 # import numpy as np
 
@@ -14,27 +15,38 @@ from global_model_package.constant_rate_calculation import get_K_func, ReactionR
 
 ReactionRateConstant.CROSS_SECTIONS_PATH = "../../../cross_sections"
 
-def get_species_and_reactions(chamber):
+def get_species_and_reactions(chamber, altitude):
     
     species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("N2", 4.65e-26, 0, 2, 5/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N2+", 4.65e-26, e, 2, 5/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O2+", 5.31e-26, e, 2, 5/2), Specie("O2", 5.31e-26, 0, 2, 5/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
 
+    # altitude = 250
+    comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
+    print(comp_data.columns)
+    comp_data = comp_data[comp_data["Heit(km)"] == altitude]
+
     initial_state_dict = {
         "e": 2.1e12,
-        "N2": 8e14,
-        "N": 8e14,
+        "N2": comp_data["N2den(m-3)"].values[0],#8e14,
+        "N": comp_data["Nden(m-3)"].values[0],#8e14,
         "N2+": 1e12,
         "N+": 1e11,
         "O2+": 0.5e12,
-        "O2": 2.5e13,
-        "O": 1e15,
+        "O2": comp_data["O2den(m-3)"].values[0],#2.5e13,
+        "O": comp_data["Oden(m-3)"].values[0],#1e15,
         "O+": 0.5e12,
         "T_e": 1.0,
-        "T_mono": 0.03,
-        "T_diato": 0.03
+        "T_mono": comp_data["T(eV)"].values[0],#0.03,
+        "T_diato": comp_data["T(eV)"].values[0], #0.03
     }
+    print(initial_state_dict)
+
     compression_rate = 4_000
-    initial_state = [compression_rate * initial_state_dict[specie.name] for specie in species.species] + [initial_state_dict["T_e"], initial_state_dict["T_mono"], initial_state_dict["T_diato"]]
-    injection_rates = np.array([0.0, 3.2e18, 3.2e16, 0.0, 0.0, 0.0, 9.7e16, 4.3e18, 0.0])
+    collection_rate = 0.5
+    initial_state =  [compression_rate * initial_state_dict[specie.name] for specie in species.species] + [initial_state_dict["T_e"], initial_state_dict["T_mono"], initial_state_dict["T_diato"]]
+    
+    injection_rates = collection_rate * np.array([0.0, comp_data["Q_N2(s-1)"].values[0], comp_data["Q_N(s-1)"].values[0], 0.0, 0.0, 0.0, comp_data["Q_O2(s-1)"].values[0], comp_data["Q_O(s-1)"].values[0], 0.0])
+    #injection_rates = np.array([0.0, 3.2e18, 3.2e16, 0.0, 0.0, 0.0, 9.7e16, 4.3e18, 0.0])
+
     # initial_state = [3.07635e+09,  1.14872e+15,  5.71817e+13,  1.62203e+03,  1.14818e+03,  1.73333e+03,  4.91217e+13,  7.59081e+14,  1.22910e+03,  1.59358e+10,  1.08048e-01,  3.00124e-02]
     # initial_state = [1e15, 5e14, 8e13, 1e10, 1e10, 1e10, 2e13, 1e15, 1e10, 4.0, 0.03, 0.03] # [e, N2, N, N2+, N+, O2+, O2, O, O+, T_e, T_monoatomique, T_diatomique]
     #peut-être changer initial_state parce qu'il faut qu'il y ait un nb suffisant d'électrons
@@ -156,6 +168,8 @@ def get_species_and_reactions(chamber):
 #  ██▀ █   ██▀ ▄▀▀ ▀█▀ █▀▄ ▄▀▄ █▄ █   █▄█ ██▀ ▄▀▄ ▀█▀ █ █▄ █ ▄▀    ██▄ ▀▄▀   ▀█▀ █▄█ ██▀   ▄▀▀ ▄▀▄ █ █    
 #  █▄▄ █▄▄ █▄▄ ▀▄▄  █  █▀▄ ▀▄▀ █ ▀█   █ █ █▄▄ █▀█  █  █ █ ▀█ ▀▄█   █▄█  █     █  █ █ █▄▄   ▀▄▄ ▀▄▀ █ █▄▄  
     electron_heating = ElectronHeatingConstantRFPower(species, 1000, chamber)
+
+    print(injection_rates)
 
     return species, initial_state, reaction_list, electron_heating
 

@@ -19,7 +19,7 @@ class ThermicDiffusion(Reaction):
 
     def __init__(self, 
                  species: Species, 
-                 kappa : Callable[[float], float],
+                 kappa : dict,
                  temp_wall : float,
                  chamber: Chamber
                  ):
