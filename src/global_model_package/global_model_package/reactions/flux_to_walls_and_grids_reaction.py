@@ -90,11 +90,9 @@ class FluxToWallsAndThroughGrids(Reaction):
         #gamma_e = state[0]*self.chamber.u_B(state[self.species.nb], 2.18e-25)
 
         #rate[0] -= E_kin * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
-        S1 = np.pi * (self.chamber.R)**2
-        S2 = 2*np.pi * self.chamber.L * self.chamber.R
-        
-        rate[0] -= E_kin_1 * gamma_e * (S1 * self.chamber.h_L(self.n_g_tot(state)) + S2 * self.chamber.h_R(self.n_g_tot(state)) )/self.chamber.V_chamber
-        rate[0] -= E_kin_2 * gamma_e * self.chamber.S_grid * self.chamber.h_L(self.n_g_tot(state))/self.chamber.V_chamber
+        #         
+        rate[0] -= E_kin_1 * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
+        rate[0] -= E_kin_2 * gamma_e * self.chamber.S_gridded_wall * self.chamber.h_L(self.n_g_tot(state)) / self.chamber.V_chamber
 
         self.var_tracker.add_value_to_variable_list("energy_change_flux_to_walls_and_through_grids", rate)
         return rate

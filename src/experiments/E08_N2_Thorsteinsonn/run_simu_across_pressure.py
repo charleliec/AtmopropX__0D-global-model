@@ -40,7 +40,7 @@ for target_pressure in pressure_list_Pa:
     try:
         print("Solving model...")
         sol = model.solve(0, 1, initial_state, (modifier_func, None))  # TODO Needs some testing
-        final_states_list.append(sol.y[:, -1])
+        final_states_list.append(list(sol.y[:, -1])+[target_pressure])
         print("Model resolved !")
     except Exception as exception:
         print("Entering exception...")
@@ -50,5 +50,5 @@ for target_pressure in pressure_list_Pa:
 
 
 print(final_states_list)
-final_states_df = pd.DataFrame(final_states_list, columns=species.names+["T_e", "T_mono", "T_diato"])
-final_states_df.to_csv(outputs_folder_path.joinpath("N2_Thorsteinsonn_final_states_across_pressure.csv"))
+final_states_df = pd.DataFrame(final_states_list, columns=species.names+["T_e", "T_mono", "T_diato", "target_pressure"])
+final_states_df.to_csv(outputs_folder_path.joinpath("new_N2_Thorsteinsonn_final_states_across_pressure_with_thermal_diff.csv"))

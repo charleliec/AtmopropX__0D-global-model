@@ -9,7 +9,7 @@ import pandas as pd
 from scipy.constants import m_e, e, pi, k, epsilon_0 as eps_0, mu_0   # k is k_B -> Boltzmann constant
 from scipy.integrate import trapezoid, solve_ivp, odeint
 import matplotlib.pyplot as plt
-import scienceplots
+#import scienceplots
 #from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 
 

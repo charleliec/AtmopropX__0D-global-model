@@ -17,7 +17,7 @@ class Chamber(object):
         #self.V_chamber=0.5
         #self.s      = config_dict["s"]
         self.S_gridded_wall = pi * self.R**2
-        self.S_cylindrical_wall: float = pi * self.R * self.L
+        self.S_cylindrical_wall: float = 2 * pi * self.R * self.L
         self.S_total = 2 * self.S_gridded_wall + self.S_cylindrical_wall
 
         # Electrical heating
@@ -41,9 +41,6 @@ class Chamber(object):
             raise KeyError("No gas ejection method has been made possible in the config file. Please configure ('V_grid', 'beta_g', 'beta_i') or 'target_pressure'.")
 
 
-
-
-
     def u_B(self,T_e, m_ion):
         """T_e in eV, m_ion is mass of single ion"""
         return np.sqrt(e*T_e/(m_ion))
@@ -63,17 +60,10 @@ class Chamber(object):
         '''beam speed on an ion going through the grids'''
         return np.sqrt((2*charge*self.V_grid)/m_ion)
 
-    def pressure(self, T, v, A_out):
-        """Calculates pressure in steady state without any plasma.
-        T : Temperature in steady state
-        v : mean velocity of gas in steady state"""
-        return (4 * k * T * self.Q_g) / (v * self.beta_i * self.S_gridded_wall)
 
     def S_eff_neutrals(self):
         """Effective surface through which neutrals leaves the chanber through the grids"""
         return self.beta_g * self.S_gridded_wall
-
-    # TODO : n_g c'est quoi ? densité du gaz considéré ou tout le gaz ?
 
     def S_eff_total(self, n_g_tot):
         """Total effective surface on which ions and electrons are lost are lost. Equals hS.
@@ -81,13 +71,12 @@ class Chamber(object):
         return (2 * self.h_R(n_g_tot) * pi * self.R * self.L) + (2 * self.h_L(n_g_tot) * pi * self.R**2)
 
     def S_eff_total_ion_neutrelisation(self, n_g_tot):
-        """Effective area on which ions are neutralized. Equals S_eff_total - beta_i * S_grid."""
+        """Effective area on which ions are neutralized. Equals S_eff_total - beta_i * S_gridded_walls."""
         return 2 * self.h_R(n_g_tot) * pi * self.R * self.L + (2 - self.beta_i) * self.h_L(n_g_tot) * pi * self.R**2     
 
 
     def gamma_ion(self, n_ion, T_e , m_ion):
         return n_ion * self.u_B(T_e, m_ion)
 
-
-    def gamma_neutral(self, n_neutral, T_neutral, m_neutral): # TODO Question: n_neutral tot ou pas ?
+    def gamma_neutral(self, n_neutral, T_neutral, m_neutral):
         return n_neutral*np.sqrt(8*e*T_neutral/(pi*m_neutral))/4

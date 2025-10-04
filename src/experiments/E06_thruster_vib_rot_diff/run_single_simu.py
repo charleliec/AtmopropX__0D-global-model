@@ -24,7 +24,7 @@ from reaction_set_N_et_O import get_species_and_reactions
 altitude = 250
 chamber = Chamber(config_dict)
 species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, altitude)
-log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs_bis")
+log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("outputs", "logs_for_plot_by_power")
 # model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="N_O_simple_thruster_constant_kappa", log_folder_path=log_folder_path)
 
 #print(chamber.V_chamber)
@@ -37,13 +37,13 @@ log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath(
 
 
 # Solve the model
-power_list = np.arange(1000,1001)
+power_list = [500] #np.arange(1000,1001)
 for power in power_list:
     electron_heating = ElectronHeatingConstantRFPower(species, power, chamber)
     model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="NO"+str(power)+"_alt_"+str(altitude), log_folder_path=log_folder_path)
     try:
         print("Solving model...")
-        sol = model.solve(0, 1e-2, initial_state)  # TODO Needs some testing
+        sol = model.solve(0, 1, initial_state)  # TODO Needs some testing
         print("Model resolved !")
     except Exception as exception:
         print("Entering exception...")
