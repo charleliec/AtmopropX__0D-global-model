@@ -110,8 +110,10 @@ def get_species_and_reactions(chamber):
 
 #  ▀█▀ █▄█ ██▀ █▀▄ █▄ ▄█ █ ▄▀▀   █▀▄ █ █▀ █▀ █ █ ▄▀▀ █ ▄▀▄ █▄ █  
 #   █  █ █ █▄▄ █▀▄ █ ▀ █ █ ▀▄▄   █▄▀ █ █▀ █▀ ▀▄█ ▄██ █ ▀▄▀ █ ▀█  
-    kappa = lambda T_i : 4.4e-5 * (e / k_B * T_i)**0.8  # noqa: E731
-    #kappa = lambda T_i : 0.005
+    # kappa = lambda T_i : 4.4e-5 * (e / k_B * T_i)**0.8  # noqa: E731
+    kappa = {}
+    kappa["N"] = lambda T_i : 1.75*3.95e-4 * (e/k_B * T_i)**0.691 #3.95e-5 * (e/k_B * T_i)**0.691
+    kappa["N2"] = lambda T_i : 1.75*2.06e-4 * (e/k_B * T_i)**0.754 #2.06e-5 * (e/k_B * T_i)**0.754
     th_diff = ThermicDiffusion(species, kappa, 0.03, chamber)
 
     #soit mettre le kappa en instance, soit faire une liste de kappa (mais faut l'associer à la bonne espèce)

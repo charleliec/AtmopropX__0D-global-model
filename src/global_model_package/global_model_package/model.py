@@ -83,7 +83,7 @@ class GlobalModel:
 
             self.var_tracker.add_value_to_variable("collision_frequency", collision_frequency)
             # Energy given to the electrons via the coil
-            volumic_power_absorbed = self.electron_heating.absorbed_power(state, collision_frequency) / self.chamber.V_chamber
+            volumic_power_absorbed = self.electron_heating.absorbed_power(state, collision_frequency, t) / self.chamber.V_chamber
             dy_energies[0] += volumic_power_absorbed
             self.var_tracker.add_value_to_variable('p_abs', volumic_power_absorbed)
             dy[:self.species.nb] = dy_densities

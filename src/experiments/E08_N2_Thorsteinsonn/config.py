@@ -10,7 +10,7 @@ config_dict = {
         'L': 10e-2,
         
         # Neutral flow
-        'target_pressure': 1.33, #in Pa
+        'target_pressure': 1 * 0.13333, #in Pa
 
         # Electrical
         'omega': 13.56e6 * 2 * pi,

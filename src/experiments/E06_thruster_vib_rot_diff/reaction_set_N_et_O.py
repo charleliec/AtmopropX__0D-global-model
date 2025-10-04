@@ -7,7 +7,7 @@ from global_model_package.reactions import (Excitation, Ionisation, Dissociation
                 VibrationalExcitation, RotationalExcitation,
                 ThermicDiffusion, InelasticCollision, ElasticCollisionWithElectron, 
                 FluxToWallsAndThroughGrids, GasInjection,
-                ElectronHeatingConstantRFPower
+                ElectronHeatingConstantRFPower, ElectronHeatingConstantAbsorbedPower
             )
 
 from global_model_package.specie import Species, Specie
@@ -44,7 +44,7 @@ def get_species_and_reactions(chamber, altitude):
     collection_rate = 0.5
     initial_state =  [compression_rate * initial_state_dict[specie.name] for specie in species.species] + [initial_state_dict["T_e"], initial_state_dict["T_mono"], initial_state_dict["T_diato"]]
     
-    injection_rates = collection_rate * np.array([0.0, comp_data["Q_N2(s-1)"].values[0], comp_data["Q_N(s-1)"].values[0], 0.0, 0.0, 0.0, comp_data["Q_O2(s-1)"].values[0], comp_data["Q_O(s-1)"].values[0], 0.0])
+    injection_rates = collection_rate * np.array([2e12, comp_data["Q_N2(s-1)"].values[0], comp_data["Q_N(s-1)"].values[0], 1e12, 1e12, 0.0, comp_data["Q_O2(s-1)"].values[0], comp_data["Q_O(s-1)"].values[0], 0.0])
     #injection_rates = np.array([0.0, 3.2e18, 3.2e16, 0.0, 0.0, 0.0, 9.7e16, 4.3e18, 0.0])
 
     # initial_state = [3.07635e+09,  1.14872e+15,  5.71817e+13,  1.62203e+03,  1.14818e+03,  1.73333e+03,  4.91217e+13,  7.59081e+14,  1.22910e+03,  1.59358e+10,  1.08048e-01,  3.00124e-02]
@@ -167,7 +167,7 @@ def get_species_and_reactions(chamber, altitude):
 
 #  ██▀ █   ██▀ ▄▀▀ ▀█▀ █▀▄ ▄▀▄ █▄ █   █▄█ ██▀ ▄▀▄ ▀█▀ █ █▄ █ ▄▀    ██▄ ▀▄▀   ▀█▀ █▄█ ██▀   ▄▀▀ ▄▀▄ █ █    
 #  █▄▄ █▄▄ █▄▄ ▀▄▄  █  █▀▄ ▀▄▀ █ ▀█   █ █ █▄▄ █▀█  █  █ █ ▀█ ▀▄█   █▄█  █     █  █ █ █▄▄   ▀▄▄ ▀▄▀ █ █▄▄  
-    electron_heating = ElectronHeatingConstantRFPower(species, 1000, chamber)
+    electron_heating = ElectronHeatingConstantRFPower(species, 500, chamber)
 
     print(injection_rates)
 

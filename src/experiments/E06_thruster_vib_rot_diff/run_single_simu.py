@@ -50,6 +50,58 @@ for power in power_list:
         model.var_tracker.save_tracked_variables()
         print("Variables saved")
         raise exception
+
+
+final_states = sol.y
+print(",".join(map(str, sol.y[:, -1])))
+final_state = sol.y[:, -1]
+#avg_e_density = 
+print("h_L : ", chamber.h_L(final_state[1:].sum()))
+print("h_R : ", chamber.h_R(final_state[1:].sum()))
+
+
+# Extract time points
+time_points = sol.t
+
+# Create figure and primary axis
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
+
+# Plot species concentrations on the first subplot
+#ax1.yscale('log')
+for i, specie in enumerate(species.species):
+    ax1.loglog(time_points, final_states[i], label=specie.name)
+ax1.set_ylabel('Density of species (m^-3)')
+ax1.legend(loc='best')
+ax1.grid()
+#ax1.grid(which='both', axis='y')
+
+# Create a secondary y-axis for Xenon temperature
+ax3 = ax2.twinx()
+
+# Plot temperatures: Electron on primary y-axis, Xenon on secondary y-axis
+ax2.loglog(time_points, final_states[species.nb], label='Electron Temp (eV)', color='blue')
+for i in range(1,3):
+    ax3.loglog(time_points, final_states[species.nb + i], linestyle='--', label= f"Molecules with {i} atoms Temp (eV)")
+
+ax2.set_ylabel('Electron Temperature', color='blue')
+ax3.set_ylabel('Molecules Temperature', color='red')
+ax2.tick_params(axis='y', labelcolor='blue')
+ax3.tick_params(axis='y', labelcolor='red')
+
+# Combine legends
+lines_2, labels_2 = ax2.get_legend_handles_labels()
+lines_3, labels_3 = ax3.get_legend_handles_labels()
+ax2.legend(lines_2 + lines_3, labels_2 + labels_3, loc='best')
+
+# Set labels and title
+ax2.set_xlabel('Time (s)')
+ax1.set_title('Species Concentrations Over Time')
+ax2.set_title('Temperature Evolution')
+ax2.grid()
+
+# Show the plot
+plt.tight_layout()
+plt.show()
 # final_states = sol.y
 
 # # Extract time points

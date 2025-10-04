@@ -19,7 +19,7 @@ class ThermicDiffusion(Reaction):
 
     def __init__(self, 
                  species: Species, 
-                 kappa : dict,
+                 kappa : dict[str, Callable[[float], float]],
                  temp_wall : float,
                  chamber: Chamber
                  ):
@@ -51,9 +51,9 @@ class ThermicDiffusion(Reaction):
         rate = np.zeros(3)
         lambda_0 = self.chamber.L/2.405 + self.chamber.R/np.pi
 
-        for sp in self.species.species[1:] :   # electron are skipped because handled before
+        for sp in self.species.species[1:] : 
             if sp.charge == 0:
-                rate[sp.nb_atoms] -= self.kappa[self.species.names[sp.index]](state[self.species.nb+sp.nb_atoms]) * e * (state[self.species.nb+sp.nb_atoms] - self.temp_wall) * self.chamber.S_total/(k_B *lambda_0*self.chamber.V_chamber)
+                rate[sp.nb_atoms] -= self.kappa[sp.name](state[self.species.nb+sp.nb_atoms]) * e * (state[self.species.nb+sp.nb_atoms] - self.temp_wall) * self.chamber.S_total/(k_B *lambda_0*self.chamber.V_chamber)
 
         self.var_tracker.add_value_to_variable_list('energy_change_thermic_diffusion', rate) # type: ignore
 
