@@ -19,5 +19,5 @@ config_dict = {
         # Electrical
         'omega': 13.56e6 * 2 * pi,
         'N': 5,
-        'R_coil': 0.15,
+        'R_coil': 2,
 }
