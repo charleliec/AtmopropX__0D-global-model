@@ -24,6 +24,7 @@ from reaction_set_N_et_O import get_species_and_reactions
 
 altitude = 250
 log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("outputs", "logs_for_plot_by_pressure")
+os.makedirs(log_folder_path, exist_ok=True)
 # model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="N_O_simple_thruster_constant_kappa", log_folder_path=log_folder_path)
 
 #print(chamber.V_chamber)
