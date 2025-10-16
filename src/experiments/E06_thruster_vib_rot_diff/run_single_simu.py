@@ -37,7 +37,7 @@ log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath(
 
 
 # Solve the model
-power_list = [500] #np.arange(1000,1001)
+power_list = [1000] #np.arange(1000,1001)
 for power in power_list:
     electron_heating = ElectronHeatingConstantRFPower(species, power, chamber)
     model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="NO"+str(power)+"_alt_"+str(altitude), log_folder_path=log_folder_path)
