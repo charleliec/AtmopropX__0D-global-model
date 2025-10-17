@@ -37,8 +37,8 @@ os.makedirs(log_folder_path, exist_ok=True)
 
 
 # Solve the model
-power_list = [300,600,1000, 1500] #np.arange(1000,1001)
-pressure_list = [1e-2, 1.5e-2,2e-2, 3e-2, 5e-2, 7e-2, 1e-1]
+power_list = [200,300,450, 600, 700, 850, 1000, 1500] #np.arange(1000,1001)
+pressure_list = [3e-2, 5e-2, 7e-2, 1e-1, 2e-1, 4e-1, 7e-1, 1]
 final_states = {}
 for power in power_list:
     final_states_per_power = {}
@@ -60,7 +60,7 @@ for power in power_list:
             raise exception
     final_states[power] = final_states_per_power
         
-with open(os.path.join(log_folder_path, "final_states_for_pressure_and_power.json"), 'w') as file:
+with open(os.path.join(log_folder_path, f"final_states_for_pressure_{pressure_list}_and_power_{power_list}.json"), 'w') as file:
             json.dump(final_states, file, indent=4)
 
 
