@@ -37,8 +37,8 @@ os.makedirs(log_folder_path, exist_ok=True)
 
 
 # Solve the model
-power_list = [300,600,1000, 1500] #np.arange(1000,1001)
-pressure_list = [1e-2, 1.5e-2,2e-2, 3e-2, 5e-2, 7e-2, 1e-1]
+power_list = [200,300,450, 600, 700, 850, 1000, 1500] #np.arange(1000,1001)
+pressure_list = [3e-2, 5e-2, 7e-2, 1e-1, 2e-1, 4e-1, 7e-1, 1]
 final_states = {}
 for power in power_list:
     final_states_per_power = {}
