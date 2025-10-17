@@ -58,6 +58,7 @@ for power in power_list:
             model.var_tracker.save_tracked_variables()
             print("Variables saved")
             raise exception
+    final_states[power] = final_states_per_power
         
 with open(os.path.join(log_folder_path, "final_states_for_pressure_and_power.json"), 'w') as file:
             json.dump(final_states, file, indent=4)
