@@ -24,7 +24,7 @@ from reaction_set_N_et_O import get_species_and_reactions
 altitude = 250
 chamber = Chamber(config_dict)
 species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, altitude)
-log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("outputs", "logs_for_plot_by_power")
+log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")
 # model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="N_O_simple_thruster_constant_kappa", log_folder_path=log_folder_path)
 
 #print(chamber.V_chamber)
@@ -35,9 +35,10 @@ log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath(
 # print(f"SIGMA I est {chamber.SIGMA_I}")
 # print(f"ng0 est {chamber.n_g_0}")
 
-
+final_states_per_power = {}
+final_states_list = []
 # Solve the model
-power_list = [1000] #np.arange(1000,1001)
+power_list = [500, 1000, 1500] #np.arange(1000,1001)
 for power in power_list:
     electron_heating = ElectronHeatingConstantRFPower(species, power, chamber)
     model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="NO"+str(power)+"_alt_"+str(altitude), log_folder_path=log_folder_path)
@@ -45,12 +46,28 @@ for power in power_list:
         print("Solving model...")
         sol = model.solve(0, 1, initial_state)  # TODO Needs some testing
         print("Model resolved !")
+        final_states_per_power[power] = sol.y[:, -1]
+        print(final_states_per_power)
+        print(final_states_list)
     except Exception as exception:
         print("Entering exception...")
         model.var_tracker.save_tracked_variables()
         print("Variables saved")
         raise exception
+    
+print(final_states_per_power)
+powers = sorted(final_states_per_power.keys())
+densities = np.array([final_states_per_power[p] for p in powers])   # shape: (num_powers, num_species)
 
+plt.figure(figsize=(7,5))
+for i, sp in enumerate(species.names):
+    plt.plot(powers, densities[:, i], label=sp, marker="o")
+plt.xlabel("Power")
+plt.ylabel("Density")
+plt.yscale("log")
+plt.legend(title="Species")
+plt.tight_layout()
+plt.show()
 
 final_states = sol.y
 print(",".join(map(str, sol.y[:, -1])))
