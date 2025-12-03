@@ -63,7 +63,7 @@ def get_species_and_reactions(chamber):
     in_Xe = InelasticCollision(species, chamber)
 
     ###Thermic diffusion
-    th_Xe = ThermicDiffusion(species, lambda T_i : 0.0103, 0.025, chamber)
+    th_Xe = ThermicDiffusion(species, {"Xe" : lambda T_i : 0.0103}, 0.025, chamber)
 
     reaction_list = [out_Xe, src_Xe, ion_Xe, exc_Xe, ela_elec_Xe, in_Xe, th_Xe] #[exc_Xe, src_Xe] #[exc_Xe, src_Xe, out_Xe] 
     #reaction_list=[ela_elec_Xe]
