@@ -323,7 +323,7 @@ class GlobalModel:
             
     #     return final_states
     
-def stop_event(t, state):
+def stop_event(t, state, *args):
     if t > 1.1e-2 and state[0] < 1e10:
         print("Early stop event triggered because of electron density below 1e10 m^-3 for t > 1.1e-2 s")
         return 0.0
